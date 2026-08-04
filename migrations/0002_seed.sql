@@ -1,6 +1,3 @@
--- 0002_seed.sql
--- Seed data migrated from the Claude Design prototype (app-data.js)
-
 INSERT INTO users (id, name, email, password, role, avatar, family) VALUES
   (1, 'Sarah Pierce', 'sarah@family.com', 'pierce123', 'admin', 'SP', 'Pierce'),
   (2, 'Mike Pierce', 'mike@family.com', 'pierce123', 'member', 'MP', 'Pierce'),
