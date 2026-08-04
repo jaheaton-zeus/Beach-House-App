@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { loginAction, type LoginState } from "@/app/actions";
 import type { ThemeColors } from "@/lib/theme";
+import { photoUrl } from "@/lib/photo-url";
 import { FONT_SANS, FONT_DISPLAY } from "./ui";
 
 interface DemoUser {
@@ -14,7 +15,15 @@ interface DemoUser {
 
 const initialState: LoginState = { error: "" };
 
-export function LoginForm({ theme, demoUsers }: { theme: ThemeColors; demoUsers: DemoUser[] }) {
+export function LoginForm({
+  theme,
+  demoUsers,
+  heroPhotoPath,
+}: {
+  theme: ThemeColors;
+  demoUsers: DemoUser[];
+  heroPhotoPath: string | null;
+}) {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
 
   return (
@@ -22,7 +31,7 @@ export function LoginForm({ theme, demoUsers }: { theme: ThemeColors; demoUsers:
       style={{
         minHeight: "100vh",
         position: "relative",
-        backgroundImage: "url('/photos/IMG_3259.jpg')",
+        backgroundImage: heroPhotoPath ? `url('${photoUrl(heroPhotoPath)}')` : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundColor: theme.headerBg,
