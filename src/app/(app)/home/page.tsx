@@ -5,6 +5,7 @@ import type { GalleryPhotoRow, PriorityPeriodRow } from "@/lib/db";
 import { THEMES, FAMILY_COLORS } from "@/lib/theme";
 import { fmtRange, todayISO } from "@/lib/format";
 import { Icons } from "@/lib/icons";
+import { photoUrl } from "@/lib/photo-url";
 import { Avatar, Badge, Card, CardLink, Screen, SectionLabel, FONT_DISPLAY } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
@@ -53,6 +54,7 @@ export default async function HomePage() {
   const currentSlot = priorityRes;
   const gallery = galleryRes.results;
   const outCount = outRes?.count ?? 0;
+  const heroPhoto = gallery[0];
 
   const now = new Date();
   const daysUntil = (d: string) => Math.ceil((new Date(d + "T12:00:00").getTime() - now.getTime()) / 86400000);
@@ -163,7 +165,7 @@ export default async function HomePage() {
                   position: "relative",
                   borderRadius: 22,
                   overflow: "hidden",
-                  backgroundImage: "url('/photos/IMG_3260.jpg')",
+                  backgroundImage: heroPhoto ? `url('${photoUrl(heroPhoto.file_path)}')` : undefined,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundColor: theme.surfaceAlt,
@@ -283,7 +285,7 @@ export default async function HomePage() {
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`/${p.file_path}`}
+                      src={photoUrl(p.file_path)}
                       alt={p.caption ?? ""}
                       loading="lazy"
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
