@@ -17,5 +17,9 @@ export default async function LoginPage() {
     .prepare("SELECT name, email, password, family FROM users ORDER BY id LIMIT 3")
     .all<{ name: string; email: string; password: string; family: string }>();
 
-  return <LoginForm theme={THEMES.shore} demoUsers={results} />;
+  const heroPhoto = await db
+    .prepare("SELECT file_path FROM gallery_photos ORDER BY sort_order LIMIT 1")
+    .first<{ file_path: string }>();
+
+  return <LoginForm theme={THEMES.shore} demoUsers={results} heroPhotoPath={heroPhoto?.file_path ?? null} />;
 }
