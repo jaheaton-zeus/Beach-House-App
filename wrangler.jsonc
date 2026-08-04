@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "sheltercove-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+      "database_id": "cb881b24-9e24-4437-8d23-58e862d9c1a4"
     }
   ]
 }
