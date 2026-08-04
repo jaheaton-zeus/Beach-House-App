@@ -331,6 +331,47 @@ export function Textarea({
 }
 
 // ── Layout helpers ──────────────────────────────────────────
+export function TopBar({
+  title,
+  subtitle,
+  right,
+  left,
+  theme,
+}: {
+  title: string;
+  subtitle?: string;
+  right?: ReactNode;
+  left?: ReactNode;
+  theme: ThemeColors;
+}) {
+  return (
+    <div
+      style={{
+        background: `${theme.bg}CC`,
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        padding: "14px 20px 12px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        flexShrink: 0,
+        position: "sticky",
+        top: 62,
+        zIndex: 50,
+        borderBottom: `0.5px solid ${theme.borderSoft}`,
+      }}
+    >
+      <div style={{ width: 36 }}>{left}</div>
+      <div style={{ textAlign: "center", flex: 1 }}>
+        <div style={{ fontSize: 17, fontWeight: 600, color: theme.text, letterSpacing: "-0.01em" }}>{title}</div>
+        {subtitle && <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 1 }}>{subtitle}</div>}
+      </div>
+      <div style={{ width: 36, display: "flex", justifyContent: "flex-end" }}>{right}</div>
+    </div>
+  );
+}
+
 export function Screen({ children, style = {} }: { children: ReactNode; style?: CSSProperties }) {
   return <div style={{ flex: 1, overflowY: "auto", paddingBottom: 60, ...style }}>{children}</div>;
 }

@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { verifyLogin, setSessionCookie, clearSessionCookie } from "@/lib/auth";
+import { verifyLogin, setSessionCookie, clearSessionCookie, getCurrentUser } from "@/lib/auth";
+import { getDB } from "@/lib/db";
+import { todayISO } from "@/lib/format";
 
 export interface LoginState {
   error: string;
@@ -27,4 +29,40 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
 export async function logoutAction() {
   await clearSessionCookie();
   redirect("/login");
+}
+
+export interface CreateReservationInput {
+  checkIn: string;
+  checkOut: string;
+  guests: string[];
+  notes: string;
+}
+
+export async function createReservation(input: CreateReservationInput): Promise<{ error?: string }> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "You're not signed in." };
+  }
+  if (!input.checkIn || !input.checkOut || input.guests.length === 0) {
+    return { error: "Missing required fields." };
+  }
+
+  const db = await getDB();
+  await db
+    .prepare(
+      `INSERT INTO reservations (user_id, check_in, check_out, guests_json, guest_count, status, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, 'pending', ?, ?)`
+    )
+    .bind(
+      user.id,
+      input.checkIn,
+      input.checkOut,
+      JSON.stringify(input.guests),
+      input.guests.length,
+      input.notes || null,
+      todayISO()
+    )
+    .run();
+
+  return {};
 }
