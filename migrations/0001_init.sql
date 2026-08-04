@@ -1,13 +1,7 @@
--- 0001_init.sql
--- Shelter Cove Beach House Reservation App — initial schema
-
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
-  -- NOTE: interim plaintext password for the mock login screen only.
-  -- This is a temporary stand-in until Cloudflare Access replaces app-level
-  -- login entirely. Do not build on top of this as a long-term auth pattern.
   password TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin', 'member')),
   avatar TEXT,
@@ -18,9 +12,9 @@ CREATE TABLE users (
 CREATE TABLE reservations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL REFERENCES users(id),
-  check_in TEXT NOT NULL,       -- ISO date, e.g. 2026-05-13
+  check_in TEXT NOT NULL,
   check_out TEXT NOT NULL,
-  guests_json TEXT NOT NULL DEFAULT '[]',  -- JSON array of guest name strings
+  guests_json TEXT NOT NULL DEFAULT '[]',
   guest_count INTEGER NOT NULL DEFAULT 1,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'denied')),
   notes TEXT,
@@ -39,13 +33,13 @@ CREATE TABLE reservation_votes (
 CREATE TABLE priority_periods (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   family TEXT NOT NULL CHECK (family IN ('Pierce', 'Thomas')),
-  start_date TEXT NOT NULL,     -- ISO date, inclusive
-  end_date TEXT NOT NULL,       -- ISO date, inclusive
+  start_date TEXT NOT NULL,
+  end_date TEXT NOT NULL,
   label TEXT
 );
 
 CREATE TABLE house_info (
-  id INTEGER PRIMARY KEY CHECK (id = 1),  -- single-row settings table
+  id INTEGER PRIMARY KEY CHECK (id = 1),
   house_name TEXT NOT NULL,
   location TEXT NOT NULL,
   bedrooms INTEGER NOT NULL,
@@ -57,7 +51,7 @@ CREATE TABLE house_info (
   wifi_password TEXT,
   parking TEXT,
   address TEXT,
-  amenities_json TEXT NOT NULL DEFAULT '[]'  -- JSON array of strings
+  amenities_json TEXT NOT NULL DEFAULT '[]'
 );
 
 CREATE TABLE house_rules (
@@ -77,26 +71,26 @@ CREATE TABLE supplies (
   name TEXT NOT NULL,
   category TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('good', 'low', 'out')),
-  count_label TEXT,             -- free text like "8 rolls" or "Half bottle"
-  essential INTEGER NOT NULL DEFAULT 0,  -- boolean 0/1
+  count_label TEXT,
+  essential INTEGER NOT NULL DEFAULT 0,
   updated_by INTEGER REFERENCES users(id),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE local_recs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  category TEXT NOT NULL,       -- Dining, Beach, Bike & Trails, Activities, Groceries
+  category TEXT NOT NULL,
   name TEXT NOT NULL,
   note TEXT,
   tag TEXT,
-  walk TEXT,                    -- e.g. "5 min walk", "10 min drive"
+  walk TEXT,
   sort_order INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE gallery_photos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  category TEXT NOT NULL,       -- Views, Living, Kitchen, Bedrooms, Bathrooms, Parking & Access
-  file_path TEXT NOT NULL,      -- served from /public/photos/... in v1
+  category TEXT NOT NULL,
+  file_path TEXT NOT NULL,
   caption TEXT,
   sort_order INTEGER NOT NULL DEFAULT 0
 );
