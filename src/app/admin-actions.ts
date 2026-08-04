@@ -152,38 +152,11 @@ export async function setPriorityFamily(periodId: number, family: "Pierce" | "Th
 }
 
 // ── Photos (R2 + gallery_photos) ────────────────────────────
-export async function uploadPhoto(formData: FormData): Promise<{ error?: string }> {
-  const admin = await requireAdmin();
-  if (!admin) return { error: "Admins only." };
-
-  const file = formData.get("file");
-  const category = String(formData.get("category") || "").trim();
-  const caption = String(formData.get("caption") || "").trim();
-
-  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image first." };
-  if (!category) return { error: "Pick a category." };
-  if (!caption) return { error: "Add a caption." };
-  if (!file.type.startsWith("image/")) return { error: "That file isn't an image." };
-  if (file.size > 10 * 1024 * 1024) return { error: "Image is too large (10MB max)." };
-
-  const { env } = await getCloudflareContext({ async: true });
-  const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
-  const key = `gallery/${crypto.randomUUID()}.${ext}`;
-
-  await env.PHOTOS.put(key, await file.arrayBuffer(), {
-    httpMetadata: { contentType: file.type },
-  });
-
-  const db = await getDB();
-  const maxOrder = await db.prepare(`SELECT COALESCE(MAX(sort_order), -1) as m FROM gallery_photos`).first<{ m: number }>();
-  await db
-    .prepare(`INSERT INTO gallery_photos (category, file_path, caption, sort_order) VALUES (?, ?, ?, ?)`)
-    .bind(category, key, caption, (maxOrder?.m ?? -1) + 1)
-    .run();
-
-  return {};
-}
-
+// Photo upload now goes through /api/photos/upload (a Route Handler) instead
+// of a Server Action — Server Actions cap request bodies at 1MB by default,
+// which real photos routinely exceed, and the documented workaround for
+// raising that limit is unreliable in production. Route Handlers don't have
+// this restriction.
 export async function deletePhoto(id: number): Promise<{ error?: string }> {
   const admin = await requireAdmin();
   if (!admin) return { error: "Admins only." };

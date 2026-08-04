@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ThemeColors } from "@/lib/theme";
 import type { GalleryPhotoRow } from "@/lib/db";
-import { uploadPhoto, deletePhoto } from "@/app/admin-actions";
+import { deletePhoto } from "@/app/admin-actions";
 import { photoUrl } from "@/lib/photo-url";
 import { Icons } from "@/lib/icons";
 import { Btn, Card, Input, Screen } from "@/components/ui";
@@ -59,15 +59,20 @@ export function PhotosAdmin({ theme, photos }: { theme: ThemeColors; photos: Gal
     formData.set("caption", caption.trim());
 
     startTransition(async () => {
-      const result = await uploadPhoto(formData);
-      if (result.error) {
-        setError(result.error);
-        return;
+      try {
+        const res = await fetch("/api/photos/upload", { method: "POST", body: formData });
+        const result = (await res.json()) as { error?: string; success?: boolean };
+        if (!res.ok || result.error) {
+          setError(result.error || "Upload failed.");
+          return;
+        }
+        resetForm();
+        setShowForm(false);
+        flash("Photo added");
+        router.refresh();
+      } catch {
+        setError("Upload failed — check your connection and try again.");
       }
-      resetForm();
-      setShowForm(false);
-      flash("Photo added");
-      router.refresh();
     });
   };
 
