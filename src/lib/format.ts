@@ -9,13 +9,18 @@ export const MONTHS_SHORT = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
+export function parseLocalDate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function fmtDate(d: string, opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" }) {
-  return new Date(d + "T12:00:00").toLocaleDateString("en-US", opts);
+  return parseLocalDate(d).toLocaleDateString("en-US", opts);
 }
 
 export function fmtRange(a: string, b: string) {
-  const da = new Date(a + "T12:00:00");
-  const db = new Date(b + "T12:00:00");
+  const da = parseLocalDate(a);
+  const db = parseLocalDate(b);
   if (da.getMonth() === db.getMonth()) {
     return `${MONTHS_SHORT[da.getMonth()]} ${da.getDate()} – ${db.getDate()}`;
   }
@@ -23,7 +28,13 @@ export function fmtRange(a: string, b: string) {
 }
 
 export function nightsBetween(a: string, b: string) {
-  return Math.max(0, Math.ceil((new Date(b).getTime() - new Date(a).getTime()) / 86400000));
+  // Compare using UTC-normalized day indices so this is immune to both
+  // local midnight/noon mismatches and DST transitions.
+  const [ay, am, ad] = a.split("-").map(Number);
+  const [by, bm, bd] = b.split("-").map(Number);
+  const dayA = Date.UTC(ay, am - 1, ad) / 86400000;
+  const dayB = Date.UTC(by, bm - 1, bd) / 86400000;
+  return Math.max(0, dayB - dayA);
 }
 
 export function todayISO() {
