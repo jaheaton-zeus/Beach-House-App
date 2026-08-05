@@ -24,14 +24,18 @@ export function HouseInfoView({
   rules,
   recs,
   galleryCount,
+  initialTab = "info",
+  initialCategory = "All",
 }: {
   theme: ThemeColors;
   houseInfo: HouseInfoRow;
   rules: HouseRuleRow[];
   recs: LocalRecRow[];
   galleryCount: number;
+  initialTab?: "info" | "rules" | "recs";
+  initialCategory?: string;
 }) {
-  const [tab, setTab] = useState<"info" | "rules" | "recs">("info");
+  const [tab, setTab] = useState<"info" | "rules" | "recs">(initialTab);
   const tabs = [
     { id: "info" as const, label: "House" },
     { id: "rules" as const, label: "Rules" },
@@ -73,7 +77,7 @@ export function HouseInfoView({
         <div style={{ padding: "12px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
           {tab === "info" && <InfoTab info={houseInfo} theme={theme} galleryCount={galleryCount} />}
           {tab === "rules" && <RulesTab theme={theme} rules={rules} />}
-          {tab === "recs" && <RecsTab theme={theme} recs={recs} address={houseInfo.address ?? ""} />}
+          {tab === "recs" && <RecsTab theme={theme} recs={recs} address={houseInfo.address ?? ""} initialCategory={initialCategory} />}
         </div>
       </Screen>
     </div>
@@ -273,8 +277,18 @@ function RulesTab({ theme, rules }: { theme: ThemeColors; rules: HouseRuleRow[] 
   );
 }
 
-function RecsTab({ theme, recs, address }: { theme: ThemeColors; recs: LocalRecRow[]; address: string }) {
-  const [filter, setFilter] = useState("All");
+function RecsTab({
+  theme,
+  recs,
+  address,
+  initialCategory = "All",
+}: {
+  theme: ThemeColors;
+  recs: LocalRecRow[];
+  address: string;
+  initialCategory?: string;
+}) {
+  const [filter, setFilter] = useState(initialCategory);
   const cats: { id: string; icon: IconFn | null }[] = [{ id: "All", icon: null }, ...CATS];
 
   const filtered = filter === "All" ? recs : recs.filter((r) => r.category === filter);

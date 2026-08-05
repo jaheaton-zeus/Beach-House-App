@@ -23,9 +23,15 @@ export interface LocalRecRow {
   sort_order: number;
 }
 
-export default async function InfoPage() {
+export default async function InfoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string; cat?: string }>;
+}) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+
+  const { tab, cat } = await searchParams;
 
   const db = await getDB();
   const [houseInfo, rulesRes, recsRes, galleryCount] = await Promise.all([
@@ -39,6 +45,8 @@ export default async function InfoPage() {
     return <div style={{ padding: 40 }}>House info hasn&apos;t been set up yet.</div>;
   }
 
+  const initialTab = tab === "rules" || tab === "recs" || tab === "info" ? tab : "info";
+
   return (
     <HouseInfoView
       theme={THEMES.shore}
@@ -46,6 +54,8 @@ export default async function InfoPage() {
       rules={rulesRes.results}
       recs={recsRes.results}
       galleryCount={galleryCount?.count ?? 0}
+      initialTab={initialTab}
+      initialCategory={cat ?? "All"}
     />
   );
 }

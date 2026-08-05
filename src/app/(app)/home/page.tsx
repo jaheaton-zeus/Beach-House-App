@@ -383,11 +383,11 @@ export default async function HomePage() {
                 {[
                   { icon: Icons.supplies, label: "House Supplies", href: "/supplies" },
                   { icon: Icons.photos, label: "Photo Gallery", href: "/gallery" },
-                  { icon: Icons.key, label: "Access & WiFi", href: "/info" },
-                  { icon: Icons.bike, label: "Bike Trails", href: "/info" },
-                  { icon: Icons.wave, label: "Beaches", href: "/info" },
-                  { icon: Icons.fork, label: "Dining", href: "/info" },
-                  { icon: Icons.rules, label: "House Rules", href: "/info" },
+                  { icon: Icons.key, label: "Access & WiFi", href: "/info?tab=info" },
+                  { icon: Icons.bike, label: "Bike Trails", href: "/info?tab=recs&cat=" + encodeURIComponent("Bike & Trails") },
+                  { icon: Icons.wave, label: "Beaches", href: "/info?tab=recs&cat=Beach" },
+                  { icon: Icons.fork, label: "Dining", href: "/info?tab=recs&cat=Dining" },
+                  { icon: Icons.rules, label: "House Rules", href: "/info?tab=rules" },
                 ].map((item) => (
                   <CardLink key={item.label} href={item.href} theme={theme} style={{ padding: "16px" }}>
                     <div style={{ marginBottom: 8, color: theme.accent }}>{item.icon(theme.accent)}</div>
