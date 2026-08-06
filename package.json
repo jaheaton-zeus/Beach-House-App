@@ -4,16 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "db:migrate:local": "wrangler d1 migrations apply sheltercove-db --local",
-    "db:migrate:remote": "wrangler d1 migrations apply sheltercove-db --remote",
     "db:seed:local": "wrangler d1 execute sheltercove-db --local --file=./migrations/0002_seed.sql",
-    "db:seed:remote": "wrangler d1 execute sheltercove-db --remote --file=./migrations/0002_seed.sql"
+    "db:exec:remote": "wrangler d1 execute sheltercove-db --remote --file"
   },
   "dependencies": {
     "next": "16.3.0",

@@ -6,7 +6,7 @@ import type { ThemeColors } from "@/lib/theme";
 import { FAMILY_COLORS } from "@/lib/theme";
 import type { PriorityPeriodRow } from "@/lib/db";
 import type { CalendarReservation } from "@/app/(app)/calendar/page";
-import { MONTHS, MONTHS_SHORT, fmtRange, todayISO } from "@/lib/format";
+import { MONTHS, MONTHS_SHORT, fmtRange, todayISO, parseLocalDate } from "@/lib/format";
 import { Icons } from "@/lib/icons";
 import { Avatar, Badge, Btn, Card, Screen, SectionLabel, FONT_DISPLAY, FONT_SANS } from "@/components/ui";
 
@@ -224,8 +224,8 @@ export function CalendarView({
                 slot: number;
               }[] = [];
               reservations.forEach((r) => {
-                const start = new Date(r.check_in + "T12:00:00");
-                const end = new Date(r.check_out + "T12:00:00");
+                const start = parseLocalDate(r.check_in);
+                const end = parseLocalDate(r.check_out);
                 if (end < week[0] || start > week[6]) return;
                 const segStart = start < week[0] ? week[0] : start;
                 const segEnd = end > week[6] ? week[6] : end;

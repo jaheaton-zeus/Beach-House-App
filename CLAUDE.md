@@ -1,0 +1,104 @@
+# Shelter Cove — project brief for Claude Code
+
+This is a family beach house reservation app, ported from a Claude Design
+prototype (preserved in `design-reference/`) into a real, database-backed
+Next.js app deployed on Cloudflare Workers. This file exists so a fresh
+Claude Code session has full context immediately.
+
+## Stack
+
+- **Next.js 16** (App Router, TypeScript) with **@opennextjs/cloudflare**
+  deploying it to Cloudflare Workers
+- **D1** (SQLite) for all app data — schema in `migrations/0001_init.sql`,
+  seed data in `migrations/0002_seed.sql`
+- **R2** (`sheltercove-photos` bucket) for gallery photo storage — served via
+  `src/app/api/photos/[...key]/route.ts`
+- Interim cookie-based login (`src/lib/auth.ts`) checking email/password
+  against the `users` table in D1 — this is a deliberate, temporary stand-in
+  until **Cloudflare Access** replaces it (in progress as of this writing —
+  see "In progress" below)
+
+## Deployment
+
+Cloudflare Workers Build is connected to the `jaheaton-zeus/Beach-House-App`
+GitHub repo. Every push to `main` triggers a build (`npm run deploy`, which
+runs `opennextjs-cloudflare build && opennextjs-cloudflare deploy`) and
+redeploy automatically. No manual deploy steps needed once this repo is
+pushed to.
+
+Live at `sheltercove.aheaton.com`. D1 database ID and R2 bucket name are
+already correctly set in `wrangler.jsonc`.
+
+## Database changes
+
+**Do not use `wrangler d1 migrations apply --remote`.** Migrations
+0001–0003 were applied manually through the D1 dashboard console (before
+this local setup existed), so wrangler's own migration-tracking table
+doesn't know they're applied — running `apply` would try to re-run
+`CREATE TABLE` statements that already exist and fail.
+
+For any new schema/data change:
+1. Add a new file: `migrations/000N_description.sql`
+2. Run it directly against the remote database:
+   ```bash
+   npm run db:exec:remote -- ./migrations/000N_description.sql
+   ```
+   (this uses `wrangler d1 execute --file`, not `migrations apply`)
+3. For local dev, `npm run db:migrate:local` is safe to use normally since
+   the local D1 has no prior manual-execution history.
+
+## Known gotchas already fixed once — don't reintroduce them
+
+- **Date parsing**: always use `parseLocalDate()` / the helpers in
+  `src/lib/format.ts` for any date math involving `check_in`/`check_out`
+  strings. Mixing noon-anchored dates with midnight-anchored dates (or with
+  `new Date()`'s exact current timestamp) causes off-by-one bugs via
+  `Math.round()` landing on exact `.5` day boundaries. This already caused a
+  real bug once (calendar reservation bars off by one day).
+- **Photo uploads must go through `src/app/api/photos/upload/route.ts`**
+  (a Route Handler), not a Server Action. Server Actions cap request bodies
+  at 1MB by default; real photos routinely exceed that, and the documented
+  workaround for raising the limit is unreliable in production. This was
+  already tried and reverted once.
+- **Fonts load via a `<link>` tag in `layout.tsx`**, not `next/font/google`.
+  The build environment's font fetch during `next build` returned 403s in
+  testing — likely CI IP rate-limiting on Google's side, a known flaky
+  pattern. Runtime `<link>` loading avoids the build-time dependency
+  entirely.
+- **D1 dashboard console input collapses multi-line SQL onto one line.**
+  If you ever paste SQL into the console manually, avoid `--` line comments
+  (they'll silently comment out everything after them once flattened). This
+  only matters for manual console use, not for `wrangler d1 execute`.
+
+## Auth model (interim, until Cloudflare Access)
+
+`users.password` is plaintext, by design, as a temporary stand-in — flagged
+in a comment in `migrations/0001_init.sql`. Do not build anything long-term
+on top of this pattern. The plan is for Cloudflare Access to gate the whole
+domain (real email-based login), with the existing in-app login staying
+underneath as a "which family member are you" persona picker — that
+migration is in progress; check with the project owner before assuming it's
+done.
+
+## What's built vs. not
+
+Fully real, wired to D1/R2: Login, Home, Calendar, Book a Stay, My Trips,
+House Info (House/Rules/Around tabs), Gallery, Supplies, Checkout, and all
+five Admin tabs (Reservations, Around the House, Users, Priority, Photos).
+
+Not yet built: nothing outstanding from the original prototype's screens.
+Remaining known work: Cloudflare Access (real auth), and possibly real
+Condo Information content pending a correct source document from the
+project owner (a previously-attached file turned out to be an unrelated
+blank template).
+
+## Commands
+
+```bash
+npm install
+npm run dev              # regular Next.js dev server
+npm run preview           # builds + runs in the actual Workers runtime (more accurate)
+npm run deploy             # builds + deploys to Cloudflare (also happens automatically on git push)
+npm run lint
+npx tsc --noEmit
+```

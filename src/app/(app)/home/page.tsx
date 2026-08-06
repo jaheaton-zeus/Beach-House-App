@@ -57,7 +57,12 @@ export default async function HomePage() {
   const heroPhoto = gallery[0];
 
   const now = new Date();
-  const daysUntil = (d: string) => Math.ceil((new Date(d + "T12:00:00").getTime() - now.getTime()) / 86400000);
+  const daysUntil = (d: string) => {
+    const [y, m, day] = d.split("-").map(Number);
+    const targetDay = Date.UTC(y, m - 1, day) / 86400000;
+    const todayDay = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000;
+    return targetDay - todayDay;
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: theme.bg }}>
