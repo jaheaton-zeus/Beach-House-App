@@ -20,7 +20,7 @@ export function Avatar({
   family?: "Pierce" | "Thomas" | null;
 }) {
   const fc = family ? FAMILY_COLORS[family] : null;
-  const bg = fc ? fc.primary : "#7A6F62";
+  const bg = fc ? fc.primary : "#6B6B68";
   return (
     <div
       style={{
