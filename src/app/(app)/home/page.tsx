@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { getDB } from "@/lib/db";
 import type { GalleryPhotoRow, PriorityPeriodRow } from "@/lib/db";
@@ -6,7 +7,8 @@ import { THEMES, FAMILY_COLORS } from "@/lib/theme";
 import { fmtRange, todayISO } from "@/lib/format";
 import { Icons } from "@/lib/icons";
 import { photoUrl } from "@/lib/photo-url";
-import { Avatar, Badge, Card, CardLink, Screen, SectionLabel, FONT_DISPLAY } from "@/components/ui";
+import { Avatar, Badge, CardLink, Screen, SectionLabel, FONT_DISPLAY, FONT_SANS } from "@/components/ui";
+import { WeatherWidget } from "@/components/WeatherWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -57,16 +59,125 @@ export default async function HomePage() {
   const heroPhoto = gallery[0];
 
   const now = new Date();
-  const daysUntil = (d: string) => {
-    const [y, m, day] = d.split("-").map(Number);
-    const targetDay = Date.UTC(y, m - 1, day) / 86400000;
-    const todayDay = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000;
-    return targetDay - todayDay;
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: theme.bg }}>
       <Screen>
+        {/* Family Schedule — full-width strip under the nav */}
+        {currentSlot && (
+          <div style={{ padding: "14px 20px 0" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 16,
+                padding: "10px 18px",
+                borderRadius: 4,
+                background: FAMILY_COLORS[currentSlot.family].soft,
+                border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33`,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    background: FAMILY_COLORS[currentSlot.family].primary,
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontFamily: "'Titillium Web', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 15,
+                  }}
+                >
+                  {currentSlot.family[0]}
+                </div>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: FAMILY_COLORS[currentSlot.family].deep,
+                  }}
+                >
+                  Priority To
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Titillium Web', sans-serif",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    fontSize: 15,
+                    color: FAMILY_COLORS[currentSlot.family].deep,
+                  }}
+                >
+                  {currentSlot.family}
+                </div>
+                <div style={{ fontSize: 12, color: FAMILY_COLORS[currentSlot.family].deep, opacity: 0.7 }}>
+                  {currentSlot.label}
+                </div>
+              </div>
+              <Link
+                href="/calendar"
+                style={{
+                  fontSize: 13,
+                  color: FAMILY_COLORS[currentSlot.family].deep,
+                  fontFamily: FONT_SANS,
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  textDecoration: "none",
+                }}
+              >
+                See all →
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Supplies status banner — full-width, only when something is critically out */}
+        {outCount > 0 && (
+          <div style={{ padding: "14px 20px 0" }}>
+            <CardLink
+              href="/supplies"
+              theme={theme}
+              style={{ background: theme.accentSoft, border: `0.5px solid ${theme.accent}` }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "50%",
+                    background: theme.accentSoft,
+                    color: theme.accentDeep,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  {Icons.alert(theme.accentDeep)}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: theme.accentDeep, letterSpacing: "-0.005em" }}>
+                    {outCount} out
+                  </div>
+                  <div style={{ fontSize: 12, color: theme.accentDeep, opacity: 0.8, marginTop: 2 }}>
+                    Pick up before arrival — last family left a heads-up
+                  </div>
+                </div>
+                {Icons.chevron(theme.accentDeep)}
+              </div>
+            </CardLink>
+          </div>
+        )}
+
         <div className="home-dashboard grid">
           <div className="home-col">
             {/* Greeting */}
@@ -79,6 +190,8 @@ export default async function HomePage() {
                   <div
                     style={{
                       fontFamily: FONT_DISPLAY,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
                       fontSize: 32,
                       color: theme.text,
                       letterSpacing: "-0.015em",
@@ -92,77 +205,39 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Priority period */}
-            <div style={{ padding: "14px 20px 0" }}>
-              <SectionLabel theme={theme}>Family Schedule</SectionLabel>
-              {currentSlot && (
-                <Card
-                  theme={theme}
-                  style={{
-                    padding: "16px 18px",
-                    marginBottom: 10,
-                    background: FAMILY_COLORS[currentSlot.family].soft,
-                    border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33`,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            {/* Plan-a-stay prompt — only when no upcoming trip (next stay now shown in nav) */}
+            {!myNext && (
+              <div style={{ padding: "20px 20px 0" }}>
+                <CardLink href="/book" theme={theme} style={{ background: theme.accent, color: "#fff", border: "none" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                     <div>
                       <div
                         style={{
-                          fontSize: 11,
-                          fontWeight: 600,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          color: FAMILY_COLORS[currentSlot.family].deep,
-                          marginBottom: 4,
-                        }}
-                      >
-                        Priority To
-                      </div>
-                      <div
-                        style={{
                           fontFamily: FONT_DISPLAY,
-                          fontSize: 19,
-                          color: FAMILY_COLORS[currentSlot.family].deep,
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          fontSize: 22,
+                          letterSpacing: "-0.01em",
                           lineHeight: 1.1,
                         }}
                       >
-                        {currentSlot.family}
+                        Plan a stay
                       </div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: FAMILY_COLORS[currentSlot.family].deep,
-                          opacity: 0.7,
-                          marginTop: 3,
-                        }}
-                      >
-                        {currentSlot.label}
+                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>
+                        Pick your dates and we&apos;ll let the family know.
                       </div>
                     </div>
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: "50%",
-                        background: FAMILY_COLORS[currentSlot.family].primary,
-                        color: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontFamily: FONT_DISPLAY,
-                        fontSize: 22,
-                      }}
-                    >
-                      {currentSlot.family[0]}
-                    </div>
+                    {Icons.chevron("#fff")}
                   </div>
-                </Card>
-              )}
-            </div>
+                </CardLink>
+              </div>
+            )}
+
+            {/* Weather — live NWS data for Hilton Head Island, SC */}
+            <WeatherWidget theme={theme} />
 
             {/* Hero house card */}
-            <div style={{ padding: "12px 20px 4px" }}>
+            <div style={{ padding: "20px 20px 4px" }}>
               <CardLink
                 href="/info"
                 theme={theme}
@@ -200,7 +275,16 @@ export default async function HomePage() {
                   >
                     The Beach House
                   </div>
-                  <div style={{ fontFamily: FONT_DISPLAY, fontSize: 24, lineHeight: 1.1, marginBottom: 4 }}>
+                  <div
+                    style={{
+                      fontFamily: FONT_DISPLAY,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      fontSize: 24,
+                      lineHeight: 1.1,
+                      marginBottom: 4,
+                    }}
+                  >
                     Shelter Cove
                   </div>
                   <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", gap: 4 }}>
@@ -210,58 +294,6 @@ export default async function HomePage() {
                 </div>
               </CardLink>
             </div>
-
-            {/* My next trip / plan a stay */}
-            {myNext ? (
-              <div style={{ padding: "20px 20px 0" }}>
-                <CardLink href="/mytrips" theme={theme} style={{ background: theme.text, color: "#fff", border: "none" }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-                    <div style={{ flex: 1 }}>
-                      <div
-                        style={{
-                          fontSize: 11,
-                          letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          color: "rgba(255,255,255,0.55)",
-                          fontWeight: 500,
-                          marginBottom: 6,
-                        }}
-                      >
-                        Your next stay
-                      </div>
-                      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 26, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                        {fmtRange(myNext.check_in, myNext.check_out)}
-                      </div>
-                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 8 }}>
-                        {daysUntil(myNext.check_in) === 0
-                          ? "Today"
-                          : daysUntil(myNext.check_in) === 1
-                          ? "Tomorrow"
-                          : `In ${daysUntil(myNext.check_in)} days`}{" "}
-                        · {myNext.guest_count} guests
-                      </div>
-                    </div>
-                    <Badge status={myNext.status} theme={theme} />
-                  </div>
-                </CardLink>
-              </div>
-            ) : (
-              <div style={{ padding: "20px 20px 0" }}>
-                <CardLink href="/book" theme={theme} style={{ background: theme.accent, color: "#fff", border: "none" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-                    <div>
-                      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                        Plan a stay
-                      </div>
-                      <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>
-                        Pick your dates and we&apos;ll let the family know.
-                      </div>
-                    </div>
-                    {Icons.chevron("#fff")}
-                  </div>
-                </CardLink>
-              </div>
-            )}
           </div>
 
           <div className="home-col">
@@ -317,44 +349,6 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Supplies alert */}
-            {outCount > 0 && (
-              <div style={{ padding: "20px 20px 0" }}>
-                <CardLink
-                  href="/supplies"
-                  theme={theme}
-                  style={{ background: theme.accentSoft, border: `0.5px solid ${theme.accent}` }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <div
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: "50%",
-                        background: theme.accentSoft,
-                        color: theme.accentDeep,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {Icons.alert(theme.accentDeep)}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: theme.accentDeep, letterSpacing: "-0.005em" }}>
-                        {outCount} out
-                      </div>
-                      <div style={{ fontSize: 12, color: theme.accentDeep, opacity: 0.8, marginTop: 2 }}>
-                        Pick up before arrival — last family left a heads-up
-                      </div>
-                    </div>
-                    {Icons.chevron(theme.accentDeep)}
-                  </div>
-                </CardLink>
-              </div>
-            )}
-
             {/* Upcoming stays */}
             {upcoming.length > 0 && (
               <div style={{ padding: "20px 20px 0" }}>
@@ -387,16 +381,27 @@ export default async function HomePage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
                   { icon: Icons.supplies, label: "House Supplies", href: "/supplies" },
+                  { icon: Icons.rules, label: "House Rules", href: "/info?tab=rules" },
                   { icon: Icons.photos, label: "Photo Gallery", href: "/gallery" },
                   { icon: Icons.key, label: "Access & WiFi", href: "/info?tab=info" },
                   { icon: Icons.bike, label: "Bike Trails", href: "/info?tab=recs&cat=" + encodeURIComponent("Bike & Trails") },
                   { icon: Icons.wave, label: "Beaches", href: "/info?tab=recs&cat=Beach" },
                   { icon: Icons.fork, label: "Dining", href: "/info?tab=recs&cat=Dining" },
-                  { icon: Icons.rules, label: "House Rules", href: "/info?tab=rules" },
                 ].map((item) => (
-                  <CardLink key={item.label} href={item.href} theme={theme} style={{ padding: "16px" }}>
-                    <div style={{ marginBottom: 8, color: theme.accent }}>{item.icon(theme.accent)}</div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}>
+                  <CardLink
+                    key={item.label}
+                    href={item.href}
+                    theme={theme}
+                    className="quick-tile"
+                    style={{ padding: "16px" }}
+                  >
+                    <div className="quick-tile-icon" style={{ marginBottom: 8, color: theme.accent }}>
+                      {item.icon(theme.accent)}
+                    </div>
+                    <div
+                      className="quick-tile-label"
+                      style={{ fontSize: 14, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}
+                    >
                       {item.label}
                     </div>
                   </CardLink>

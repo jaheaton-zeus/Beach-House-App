@@ -34,18 +34,18 @@ export default async function InfoPage({
   const { tab, cat } = await searchParams;
 
   const db = await getDB();
-  const [houseInfo, rulesRes, recsRes, galleryCount] = await Promise.all([
+  const [houseInfo, rulesRes, recsRes] = await Promise.all([
     db.prepare(`SELECT * FROM house_info WHERE id = 1`).first<HouseInfoRow>(),
     db.prepare(`SELECT * FROM house_rules ORDER BY sort_order`).all<HouseRuleRow>(),
     db.prepare(`SELECT * FROM local_recs ORDER BY sort_order`).all<LocalRecRow>(),
-    db.prepare(`SELECT COUNT(*) as count FROM gallery_photos`).first<{ count: number }>(),
   ]);
 
   if (!houseInfo) {
     return <div style={{ padding: 40 }}>House info hasn&apos;t been set up yet.</div>;
   }
 
-  const initialTab = tab === "rules" || tab === "recs" || tab === "info" ? tab : "info";
+  const initialTab =
+    tab === "rules" || tab === "recs" || tab === "info" || tab === "lights" ? tab : "rules";
 
   return (
     <HouseInfoView
@@ -53,7 +53,6 @@ export default async function InfoPage({
       houseInfo={houseInfo}
       rules={rulesRes.results}
       recs={recsRes.results}
-      galleryCount={galleryCount?.count ?? 0}
       initialTab={initialTab}
       initialCategory={cat ?? "All"}
     />

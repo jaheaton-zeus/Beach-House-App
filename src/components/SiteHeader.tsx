@@ -6,13 +6,20 @@ import { usePathname } from "next/navigation";
 import type { ThemeColors } from "@/lib/theme";
 import type { UserRow } from "@/lib/db";
 import { Icons } from "@/lib/icons";
-import { Avatar, FONT_SANS, FONT_DISPLAY } from "./ui";
+import { Avatar, Badge, FONT_SANS } from "./ui";
 import { logoutAction } from "@/app/actions";
+import { fmtRange } from "@/lib/format";
 
 interface NavItem {
   href: string;
   icon: (c?: string) => React.ReactNode;
   label: string;
+}
+
+export interface NextStay {
+  check_in: string;
+  check_out: string;
+  status: "approved" | "pending" | "denied";
 }
 
 function navLinks(currentUser: UserRow): NavItem[] {
@@ -33,10 +40,12 @@ export function SiteHeader({
   currentUser,
   theme,
   showAdminBadge = true,
+  nextStay,
 }: {
   currentUser: UserRow;
   theme: ThemeColors;
   showAdminBadge?: boolean;
+  nextStay?: NextStay | null;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -64,8 +73,9 @@ export function SiteHeader({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          height: 62,
+          height: 56,
           gap: 20,
+          position: "relative",
         }}
       >
         <Link
@@ -76,46 +86,34 @@ export function SiteHeader({
             style={{
               width: 30,
               height: 30,
-              borderRadius: 8,
+              borderRadius: 4,
               background: theme.accent,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               color: "#fff",
-              fontFamily: FONT_DISPLAY,
-              fontWeight: 700,
+              fontFamily: "'Titillium Web', sans-serif",
+              fontWeight: 900,
               fontSize: 15,
               flexShrink: 0,
             }}
           >
             S
           </div>
-          <span style={{ fontFamily: FONT_DISPLAY, fontSize: 17, color: theme.text, whiteSpace: "nowrap" }}>
+          <span
+            style={{
+              fontFamily: "'Titillium Web', sans-serif",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.03em",
+              fontSize: 16,
+              color: theme.text,
+              whiteSpace: "nowrap",
+            }}
+          >
             Shelter Cove
           </span>
         </Link>
-
-        <nav className="om-desktop-only" style={{ display: "flex", gap: 2 }}>
-          {items.map((it) => (
-            <Link
-              key={it.href}
-              href={it.href}
-              style={{
-                padding: "8px 14px",
-                borderRadius: 8,
-                whiteSpace: "nowrap",
-                background: isActive(it.href) ? theme.surfaceAlt : "transparent",
-                color: isActive(it.href) ? theme.text : theme.textMuted,
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: FONT_SANS,
-                textDecoration: "none",
-              }}
-            >
-              {it.label}
-            </Link>
-          ))}
-        </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div className="om-desktop-only" style={{ alignItems: "center", gap: 8 }}>
@@ -130,9 +128,10 @@ export function SiteHeader({
                   padding: "2px 7px",
                   background: theme.text,
                   color: "#fff",
-                  borderRadius: 99,
-                  fontWeight: 600,
+                  borderRadius: 3,
+                  fontWeight: 700,
                   letterSpacing: "0.06em",
+                  fontFamily: "'JetBrains Mono', monospace",
                 }}
               >
                 ADMIN
@@ -174,6 +173,92 @@ export function SiteHeader({
           </button>
         </div>
       </div>
+
+      <nav
+        className="om-desktop-only"
+        style={{
+          maxWidth: 1250,
+          margin: "0 auto",
+          padding: "0 24px",
+          gap: 2,
+          height: 42,
+          background: theme.text,
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", height: "100%" }}>
+          {items.map((it) => (
+            <Link
+              key={it.href}
+              href={it.href}
+              style={{
+                padding: "0 16px",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: 0,
+                whiteSpace: "nowrap",
+                background: "transparent",
+                position: "relative",
+                color: isActive(it.href) ? "#fff" : "rgba(255,255,255,0.6)",
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: "'Titillium Web', sans-serif",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                textDecoration: "none",
+              }}
+            >
+              {it.label}
+              {isActive(it.href) && (
+                <span
+                  style={{
+                    position: "absolute",
+                    left: 10,
+                    right: 10,
+                    bottom: 0,
+                    height: 3,
+                    background: theme.accent,
+                    clipPath: "polygon(6% 0,100% 0,94% 100%,0 100%)",
+                  }}
+                />
+              )}
+            </Link>
+          ))}
+        </div>
+        {nextStay && (
+          <Link
+            href="/mytrips"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: theme.accent,
+              border: "none",
+              padding: "5px 12px",
+              borderRadius: 4,
+              margin: "8px 0",
+              textDecoration: "none",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 9,
+                color: "rgba(255,255,255,0.75)",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                fontWeight: 700,
+              }}
+            >
+              Next Stay
+            </span>
+            <span style={{ fontSize: 12, color: "#fff", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+              {fmtRange(nextStay.check_in, nextStay.check_out)}
+            </span>
+            <Badge status={nextStay.status} theme={theme} />
+          </Link>
+        )}
+      </nav>
 
       {mobileOpen && (
         <div

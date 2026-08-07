@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import type { ThemeColors } from "@/lib/theme";
 import type { MyTripRow } from "@/app/(app)/mytrips/page";
@@ -38,7 +38,17 @@ export function MyTripsView({ theme, reservations }: { theme: ThemeColors; reser
               >
                 {Icons.trips(theme.accent)}
               </div>
-              <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.text, marginBottom: 6, letterSpacing: "-0.01em" }}>
+              <div
+                style={{
+                  fontFamily: FONT_DISPLAY,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  fontSize: 22,
+                  color: theme.text,
+                  marginBottom: 6,
+                  letterSpacing: "-0.01em",
+                }}
+              >
                 No trips yet
               </div>
               <div style={{ fontSize: 14, color: theme.textMuted, marginBottom: 24 }}>Plan your next stay at the house.</div>
@@ -65,7 +75,17 @@ export function MyTripsView({ theme, reservations }: { theme: ThemeColors; reser
                       <span style={{ fontSize: 12, color: theme.textSubtle }}>{nightsBetween(r.check_in, r.check_out)} nights</span>
                       {isPast && <span style={{ fontSize: 11, color: theme.textSubtle, fontStyle: "italic" }}>Past</span>}
                     </div>
-                    <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+                    <div
+                      style={{
+                        fontFamily: FONT_DISPLAY,
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        fontSize: 22,
+                        color: theme.text,
+                        letterSpacing: "-0.01em",
+                        lineHeight: 1.1,
+                      }}
+                    >
                       {fmtRange(r.check_in, r.check_out)}
                     </div>
                     <div style={{ fontSize: 13, color: theme.textMuted, marginTop: 4 }}>
@@ -117,7 +137,20 @@ export function MyTripsView({ theme, reservations }: { theme: ThemeColors; reser
                       </div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                         {guests.map((g, i) => (
-                          <span key={i} style={{ padding: "4px 11px", background: theme.surfaceAlt, borderRadius: 99, fontSize: 12, color: theme.text }}>
+                          <span
+                            key={i}
+                            className="pill-badge"
+                            style={
+                              {
+                                padding: "4px 11px",
+                                background: theme.surfaceAlt,
+                                borderRadius: 99,
+                                fontSize: 12,
+                                color: theme.text,
+                                "--pc": theme.text,
+                              } as CSSProperties
+                            }
+                          >
                             {g}
                           </span>
                         ))}

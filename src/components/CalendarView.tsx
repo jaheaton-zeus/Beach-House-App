@@ -102,7 +102,16 @@ export function CalendarView({
               marginBottom: 18,
             }}
           >
-            <div style={{ fontFamily: FONT_DISPLAY, fontSize: 34, color: theme.text, letterSpacing: "-0.015em" }}>
+            <div
+              style={{
+                fontFamily: FONT_DISPLAY,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                fontSize: 34,
+                color: theme.text,
+                letterSpacing: "-0.015em",
+              }}
+            >
               {MONTHS[viewMonth]} <span style={{ color: theme.textMuted }}>{viewYear}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -185,7 +194,7 @@ export function CalendarView({
                     }}
                   >
                     <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.75 }}>{MONTHS_SHORT[m]}</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 1, fontFamily: FONT_DISPLAY }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 1, fontFamily: FONT_DISPLAY, textTransform: "uppercase" }}>
                       {f ? f.family[0] : "—"}
                     </div>
                   </button>

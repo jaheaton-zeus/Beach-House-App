@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import type { ThemeColors } from "@/lib/theme";
 import type { HouseInfoRow } from "@/lib/db";
 import type { HouseRuleRow, LocalRecRow } from "@/app/(app)/info/page";
@@ -23,23 +22,22 @@ export function HouseInfoView({
   houseInfo,
   rules,
   recs,
-  galleryCount,
-  initialTab = "info",
+  initialTab = "rules",
   initialCategory = "All",
 }: {
   theme: ThemeColors;
   houseInfo: HouseInfoRow;
   rules: HouseRuleRow[];
   recs: LocalRecRow[];
-  galleryCount: number;
-  initialTab?: "info" | "rules" | "recs";
+  initialTab?: "info" | "rules" | "recs" | "lights";
   initialCategory?: string;
 }) {
-  const [tab, setTab] = useState<"info" | "rules" | "recs">(initialTab);
+  const [tab, setTab] = useState<"info" | "rules" | "recs" | "lights">(initialTab);
   const tabs = [
     { id: "info" as const, label: "House" },
     { id: "rules" as const, label: "Rules" },
     { id: "recs" as const, label: "Around" },
+    { id: "lights" as const, label: "Lights" },
   ];
 
   return (
@@ -75,17 +73,51 @@ export function HouseInfoView({
 
       <Screen>
         <div style={{ padding: "12px 20px 0", display: "flex", flexDirection: "column", gap: 14 }}>
-          {tab === "info" && <InfoTab info={houseInfo} theme={theme} galleryCount={galleryCount} />}
+          {tab === "info" && <InfoTab info={houseInfo} theme={theme} />}
           {tab === "rules" && <RulesTab theme={theme} rules={rules} />}
           {tab === "recs" && <RecsTab theme={theme} recs={recs} address={houseInfo.address ?? ""} initialCategory={initialCategory} />}
+          {tab === "lights" && <LightsTab theme={theme} />}
         </div>
       </Screen>
     </div>
   );
 }
 
-function InfoTab({ info, theme, galleryCount }: { info: HouseInfoRow; theme: ThemeColors; galleryCount: number }) {
-  const router = useRouter();
+function LightsTab({ theme }: { theme: ThemeColors }) {
+  return (
+    <Card theme={theme} hoverable={false} style={{ textAlign: "center", padding: "48px 20px" }}>
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: theme.accentSoft,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "0 auto 16px",
+        }}
+      >
+        {Icons.settings(theme.accent)}
+      </div>
+      <div
+        style={{
+          fontFamily: FONT_DISPLAY,
+          fontWeight: 700,
+          textTransform: "uppercase",
+          fontSize: 18,
+          color: theme.text,
+          marginBottom: 6,
+        }}
+      >
+        Lights — coming soon
+      </div>
+      <div style={{ fontSize: 13, color: theme.textMuted }}>Smart lighting controls for the house will live here.</div>
+    </Card>
+  );
+}
+
+function InfoTab({ info, theme }: { info: HouseInfoRow; theme: ThemeColors }) {
   const [copied, setCopied] = useState<string | null>(null);
   const amenities: string[] = JSON.parse(info.amenities_json || "[]");
 
@@ -127,36 +159,22 @@ function InfoTab({ info, theme, galleryCount }: { info: HouseInfoRow; theme: The
         ].map((s) => (
           <div key={s.label} style={{ background: theme.surface, border: `0.5px solid ${theme.border}`, borderRadius: 14, padding: "14px 8px", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: 6, color: theme.accent }}>{s.icon(theme.accent)}</div>
-            <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.text, lineHeight: 1 }}>{s.value}</div>
+            <div
+              style={{
+                fontFamily: FONT_DISPLAY,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                fontSize: 22,
+                color: theme.text,
+                lineHeight: 1,
+              }}
+            >
+              {s.value}
+            </div>
             <div style={{ fontSize: 11, color: theme.textMuted, marginTop: 4 }}>{s.label}</div>
           </div>
         ))}
       </div>
-
-      <button
-        onClick={() => router.push("/gallery")}
-        style={{
-          position: "relative",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          borderRadius: 18,
-          overflow: "hidden",
-          width: "100%",
-          aspectRatio: "16/7",
-          backgroundColor: theme.surfaceAlt,
-          fontFamily: FONT_SANS,
-        }}
-      >
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(31,27,22,0.7) 0%, rgba(31,27,22,0.15) 70%)" }} />
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", padding: "0 20px", color: "#fff", textAlign: "left" }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.75)", fontWeight: 500, marginBottom: 3, whiteSpace: "nowrap" }}>Photo Gallery</div>
-          <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, lineHeight: 1.1 }}>Take a look inside</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", marginTop: 5, display: "flex", alignItems: "center", gap: 5 }}>
-            {galleryCount} photos · View all {Icons.chevron("rgba(255,255,255,0.85)")}
-          </div>
-        </div>
-      </button>
 
       <div>
         <SectionLabel theme={theme}>Access</SectionLabel>
@@ -237,7 +255,20 @@ function RulesTab({ theme, rules }: { theme: ThemeColors; rules: HouseRuleRow[] 
   return (
     <>
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>House Rules</div>
+        <div
+          style={{
+            fontFamily: FONT_DISPLAY,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            fontSize: 22,
+            color: theme.text,
+            letterSpacing: "-0.01em",
+            marginBottom: 4,
+            lineHeight: 1.1,
+          }}
+        >
+          House Rules
+        </div>
         <div style={{ fontSize: 14, color: theme.textMuted }}>Keep things smooth so both families can enjoy.</div>
       </div>
       <Card theme={theme} style={{ padding: 0 }}>
@@ -296,7 +327,20 @@ function RecsTab({
   return (
     <>
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>Around the House</div>
+        <div
+          style={{
+            fontFamily: FONT_DISPLAY,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            fontSize: 22,
+            color: theme.text,
+            letterSpacing: "-0.01em",
+            marginBottom: 4,
+            lineHeight: 1.1,
+          }}
+        >
+          Around the House
+        </div>
         <div style={{ fontSize: 14, color: theme.textMuted }}>Family favorites within walking or short drive of Shelter Cove.</div>
       </div>
 
@@ -363,7 +407,18 @@ function BikeMap({ theme }: { theme: ThemeColors }) {
       <div style={{ padding: "14px 16px 12px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <div style={{ color: theme.accent }}>{Icons.bike(theme.accent)}</div>
-          <span style={{ fontFamily: FONT_DISPLAY, fontSize: 18, color: theme.text, lineHeight: 1.1 }}>Island Trail Map</span>
+          <span
+            style={{
+              fontFamily: FONT_DISPLAY,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              fontSize: 18,
+              color: theme.text,
+              lineHeight: 1.1,
+            }}
+          >
+            Island Trail Map
+          </span>
         </div>
         <div style={{ fontSize: 13, color: theme.textMuted, lineHeight: 1.45 }}>
           Hilton Head has 60+ miles of public bike paths. Tap a layer in the legend to see routes, then pinch to zoom around Shelter Cove.
@@ -412,7 +467,7 @@ function RecList({ items, theme, address }: { items: LocalRecRow[]; theme: Theme
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {items.map((item) => (
-        <Card key={item.id} theme={theme} style={{ padding: "14px 16px" }}>
+        <Card key={item.id} theme={theme} className="quick-tile" style={{ padding: "14px 16px" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
@@ -429,7 +484,10 @@ function RecList({ items, theme, address }: { items: LocalRecRow[]; theme: Theme
                 Directions{item.walk ? ` · ${item.walk}` : ""}
               </a>
             </div>
-            <span style={{ padding: "3px 9px", background: theme.surfaceAlt, color: theme.textMuted, borderRadius: 99, fontSize: 10, fontWeight: 600, flexShrink: 0, letterSpacing: "0.02em", textTransform: "uppercase" }}>
+            <span
+              className="rec-tag"
+              style={{ padding: "3px 9px", background: theme.surfaceAlt, color: theme.textMuted, borderRadius: 99, fontSize: 10, fontWeight: 600, flexShrink: 0, letterSpacing: "0.02em", textTransform: "uppercase" }}
+            >
               {item.tag}
             </span>
           </div>

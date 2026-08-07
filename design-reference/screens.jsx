@@ -54,7 +54,7 @@ function LoginScreen({ onLogin, theme }) {
         {/* Title */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 8, fontWeight: 500 }}>Shelter Cove</div>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 38, lineHeight: 1.05, letterSpacing: "-0.015em" }}>
+          <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 36, lineHeight: 1.4, letterSpacing: "0" }}>
             The Pierce/Thomas<br />Beach House
           </div>
         </div>
@@ -126,6 +126,50 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
   const now = new Date();
   const today = now.toISOString().split("T")[0];
 
+  const [weather, setWeather] = React.useState(null);
+  React.useEffect(() => {
+    let alive = true;
+    const iconFor = (t = "") => {
+      t = t.toLowerCase();
+      if (t.includes("rain") || t.includes("shower") || t.includes("storm") || t.includes("thunder")) return "rain";
+      if (t.includes("cloud") || t.includes("overcast") || t.includes("fog")) return "cloud";
+      return "sun";
+    };
+    (async () => {
+      try {
+        const pt = await fetch("https://api.weather.gov/points/32.2163,-80.7526").then(r => r.json());
+        const [forecastRes, stationsRes] = await Promise.all([
+          fetch(pt.properties.forecast).then(r => r.json()),
+          fetch(pt.properties.observationStations).then(r => r.json())
+        ]);
+        let current = null;
+        const stationId = stationsRes.features?.[0]?.properties?.stationIdentifier;
+        if (stationId) {
+          const obs = await fetch(`https://api.weather.gov/stations/${stationId}/observations/latest`).then(r => r.json());
+          const tempC = obs.properties?.temperature?.value;
+          current = {
+            tempF: tempC != null ? Math.round(tempC * 9 / 5 + 32) : null,
+            text: obs.properties?.textDescription || "",
+            icon: iconFor(obs.properties?.textDescription)
+          };
+        }
+        const periods = forecastRes.properties.periods;
+        const days = periods.filter(p => p.isDaytime).slice(0, 5).map(p => ({ name: p.name.slice(0, 3), hi: p.temperature, icon: iconFor(p.shortForecast) }));
+        const nights = periods.filter(p => !p.isDaytime);
+        days.forEach((d, i) => { d.lo = nights[i] ? nights[i].temperature : null; });
+        if (alive) setWeather({ current, days });
+      } catch (e) {
+        if (alive) setWeather({ error: true });
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+  const weatherIcon = (icon, size = 18, color) => {
+    if (icon === "sun") return <svg width={size} height={size} viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke={color || "#FFD166"} strokeWidth="1.8"/><path d="M12 2.5V5M12 19V21.5M21.5 12H19M5 12H2.5M18.6 5.4L16.9 7.1M7.1 16.9L5.4 18.6M18.6 18.6L16.9 16.9M7.1 7.1L5.4 5.4" stroke={color || "#FFD166"} strokeWidth="1.8" strokeLinecap="round"/></svg>;
+    if (icon === "cloud") return <svg width={size} height={size} viewBox="0 0 24 24" fill="none"><path d="M6 17H16C18 17 19.5 15.5 19.5 13.7C19.5 12 18.2 10.7 16.6 10.5C16.2 8 14 6 11.5 6C8.7 6 6.5 8.2 6.3 11C4.4 11.3 3 12.9 3 14.8C3 16 4.3 17 6 17Z" stroke={color || "rgba(255,255,255,0.75)"} strokeWidth="1.6" strokeLinejoin="round"/></svg>;
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none"><path d="M6 14H15C17 14 18.5 12.6 18.5 10.9C18.5 9.3 17.3 8 15.7 7.8C15.3 5.5 13.2 3.7 10.9 3.7C8.3 3.7 6.2 5.7 6 8.3C4.2 8.6 3 10.1 3 11.9C3 13 4.3 14 6 14Z" stroke={color || "rgba(255,255,255,0.75)"} strokeWidth="1.6" strokeLinejoin="round"/><path d="M8 18L7 20M12 18L11 20M16 18L15 20" stroke="#7FC7E8" strokeWidth="1.6" strokeLinecap="round"/></svg>;
+  };
+
   const upcoming = APP_DATA.reservations
     .filter(r => r.checkIn >= today && r.status !== "denied")
     .sort((a, b) => a.checkIn.localeCompare(b.checkIn));
@@ -141,6 +185,64 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: theme.bg }}>
       <Screen>
+        {/* Family Schedule — full-width strip under the nav */}
+        {currentSlot && (
+          <div style={{ padding: "14px 20px 0" }}>
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+              padding: "10px 18px", borderRadius: 4,
+              background: FAMILY_COLORS[currentSlot.family].soft, border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33`
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                  background: FAMILY_COLORS[currentSlot.family].primary, color: "#fff",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, fontSize: 15
+                }}>{currentSlot.family[0]}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: FAMILY_COLORS[currentSlot.family].deep }}>Priority To</div>
+                <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 15, color: FAMILY_COLORS[currentSlot.family].deep }}>
+                  {currentSlot.family}
+                </div>
+                <div style={{ fontSize: 12, color: FAMILY_COLORS[currentSlot.family].deep, opacity: 0.7 }}>
+                  {MONTHS[currentSlot.months[0]]} – {MONTHS[currentSlot.months[1]]}
+                </div>
+              </div>
+              <button onClick={() => setScreen("calendar")} style={{ fontSize: 13, color: FAMILY_COLORS[currentSlot.family].deep, background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, whiteSpace: "nowrap" }}>See all →</button>
+            </div>
+          </div>
+        )}
+
+        {/* Supplies status banner — full-width, only when something is critically out */}
+        {(() => {
+          const outCount = APP_DATA.supplies.filter(s => s.status === "out").length;
+          if (outCount === 0) return null;
+          return (
+            <div style={{ padding: "14px 20px 0" }}>
+              <Card theme={theme} onClick={() => setScreen("supplies")} style={{
+                background: theme.accentSoft, border: `0.5px solid ${theme.accent}`
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: "50%",
+                    background: theme.accentSoft, color: theme.accentDeep,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
+                  }}>{Icons.alert(theme.accentDeep)}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: theme.accentDeep, letterSpacing: "-0.005em" }}>
+                      {outCount} out
+                    </div>
+                    <div style={{ fontSize: 12, color: theme.accentDeep, opacity: 0.8, marginTop: 2 }}>
+                      Pick up before arrival — last family left a heads-up
+                    </div>
+                  </div>
+                  {Icons.chevron(theme.accentDeep)}
+                </div>
+              </Card>
+            </div>
+          );
+        })()}
+
         <div className={layout === "dashboard" ? "home-dashboard grid" : "home-dashboard"}>
         <div className="home-col">
         {/* Greeting */}
@@ -150,7 +252,7 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
               <div style={{ fontSize: 13, color: theme.textMuted, marginBottom: 2, fontWeight: 500 }}>
                 {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
               </div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 32, color: theme.text, letterSpacing: "-0.015em", lineHeight: 1.1 }}>
+              <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 32, color: theme.text, letterSpacing: "-0.015em", lineHeight: 1.1 }}>
                 Hi, {currentUser.name.split(" ")[0]}
               </div>
             </div>
@@ -158,36 +260,55 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
           </div>
         </div>
 
-        {/* Schedule — moved to top */}
-        <div style={{ padding: "14px 20px 0" }}>
-          <SectionLabel theme={theme} action="See all →" onAction={() => setScreen("calendar")}>Family Schedule</SectionLabel>
-
-          {currentSlot && (
-            <Card theme={theme} style={{ padding: "16px 18px", marginBottom: 10, background: FAMILY_COLORS[currentSlot.family].soft, border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33` }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        {/* Plan-a-stay prompt — only when no upcoming trip (next stay now shown in nav) */}
+        {!myNext && (
+          <div style={{ padding: "20px 20px 0" }}>
+            <Card theme={theme} onClick={() => setScreen("book")} style={{ background: theme.accent, color: "#fff", border: "none" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: FAMILY_COLORS[currentSlot.family].deep, marginBottom: 4 }}>Priority To</div>
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 19, color: FAMILY_COLORS[currentSlot.family].deep, lineHeight: 1.1 }}>
-                    {currentSlot.family}
-                  </div>
-                  <div style={{ fontSize: 12, color: FAMILY_COLORS[currentSlot.family].deep, opacity: 0.7, marginTop: 3 }}>
-                    {MONTHS[currentSlot.months[0]]} – {MONTHS[currentSlot.months[1]]}
-                  </div>
+                  <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, letterSpacing: "-0.01em", lineHeight: 1.1 }}>Plan a stay</div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>Pick your dates and we'll let the family know.</div>
                 </div>
-                <div style={{
-                  width: 44, height: 44, borderRadius: "50%",
-                  background: FAMILY_COLORS[currentSlot.family].primary, color: "#fff",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "'DM Serif Display', serif", fontSize: 22
-                }}>{currentSlot.family[0]}</div>
+                {Icons.chevron("#fff")}
               </div>
             </Card>
-          )}
+          </div>
+        )}
 
+        {/* Weather — live NWS data for Hilton Head Island, SC */}
+        <div style={{ padding: "0 20px 0" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: theme.text, borderRadius: 4, padding: "14px 18px", minHeight: 58 }}>
+            {!weather ? (
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}>Loading weather…</div>
+            ) : weather.error ? (
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}>Weather unavailable right now.</div>
+            ) : (
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {weatherIcon(weather.current?.icon || "sun", 30)}
+                  <div>
+                    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 26, color: "#fff", lineHeight: 1 }}>
+                      {weather.current?.tempF != null ? `${weather.current.tempF}°` : "—"}<span style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", fontWeight: 500 }}> F</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 2 }}>{weather.current?.text || "—"} · Hilton Head</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 18 }}>
+                  {weather.days.map((w, i) => (
+                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>{w.name}</div>
+                      {weatherIcon(w.icon)}
+                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#fff" }}>{w.hi}°<span style={{ color: "rgba(255,255,255,0.45)" }}>{w.lo != null ? `/${w.lo}°` : ""}</span></div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Hero house card */}
-        <div style={{ padding: "12px 20px 4px" }}>
+        <div style={{ padding: "20px 20px 4px" }}>
           <div onClick={() => setScreen("info")} style={{
             position: "relative", borderRadius: 22, overflow: "hidden",
       backgroundImage: "url('photos/IMG_3260.jpg')",
@@ -198,7 +319,7 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(31,27,22,0) 40%, rgba(31,27,22,0.85) 100%)" }}></div>
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 20px 18px", color: "#fff" }}>
               <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", marginBottom: 4, fontWeight: 500 }}>The Beach House</div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, lineHeight: 1.1, marginBottom: 4 }}>Shelter Cove</div>
+              <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 24, lineHeight: 1.1, marginBottom: 4 }}>Shelter Cove</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", display: "flex", alignItems: "center", gap: 4 }}>
                 {Icons.pin("rgba(255,255,255,0.85)")}
                 Unit 7557 · Shelter Cove, Hilton Head
@@ -206,38 +327,6 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
             </div>
           </div>
         </div>
-
-        {/* My next trip — bold (moved above photo strip) */}
-        {myNext ? (
-          <div style={{ padding: "20px 20px 0" }}>
-            <Card theme={theme} onClick={() => setScreen("mytrips")} style={{ background: theme.text, color: "#fff", border: "none" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", fontWeight: 500, marginBottom: 6 }}>Your next stay</div>
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
-                    {fmtRange(myNext.checkIn, myNext.checkOut)}
-                  </div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 8 }}>
-                    {daysUntil(myNext.checkIn) === 0 ? "Today" : daysUntil(myNext.checkIn) === 1 ? "Tomorrow" : `In ${daysUntil(myNext.checkIn)} days`} · {myNext.guestCount} guests
-                  </div>
-                </div>
-                <Badge status={myNext.status} theme={theme} />
-              </div>
-            </Card>
-          </div>
-        ) : (
-          <div style={{ padding: "20px 20px 0" }}>
-            <Card theme={theme} onClick={() => setScreen("book")} style={{ background: theme.accent, color: "#fff", border: "none" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-                <div>
-                  <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, letterSpacing: "-0.01em", lineHeight: 1.1 }}>Plan a stay</div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", marginTop: 4 }}>Pick your dates and we'll let the family know.</div>
-                </div>
-                {Icons.chevron("#fff")}
-              </div>
-            </Card>
-          </div>
-        )}
 
         </div>
         <div className="home-col">
@@ -263,36 +352,6 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
             ))}
           </div>
         </div>
-
-        {/* Supplies status banner — only when something is critically out */}
-        {(() => {
-          const outCount = APP_DATA.supplies.filter(s => s.status === "out").length;
-          if (outCount === 0) return null;
-          return (
-            <div style={{ padding: "20px 20px 0" }}>
-              <Card theme={theme} onClick={() => setScreen("supplies")} style={{
-                background: theme.accentSoft, border: `0.5px solid ${theme.accent}`
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: "50%",
-                    background: theme.accentSoft, color: theme.accentDeep,
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
-                  }}>{Icons.alert(theme.accentDeep)}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: theme.accentDeep, letterSpacing: "-0.005em" }}>
-                      {outCount} out
-                    </div>
-                    <div style={{ fontSize: 12, color: theme.accentDeep, opacity: 0.8, marginTop: 2 }}>
-                      Pick up before arrival — last family left a heads-up
-                    </div>
-                  </div>
-                  {Icons.chevron(theme.accentDeep)}
-                </div>
-              </Card>
-            </div>
-          );
-        })()}
 
         {/* Upcoming stays from family */}
         {upcoming.length > 0 && (
@@ -329,18 +388,17 @@ function HomeScreen({ currentUser, setScreen, theme, layout = "single" }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {[
               { icon: Icons.supplies, label: "House Supplies", screen: "supplies", accent: true },
+              { icon: Icons.rules, label: "House Rules", screen: "rules" },
               { icon: Icons.photos, label: "Photo Gallery", screen: "gallery" },
               { icon: Icons.key, label: "Access & WiFi", screen: "info" },
               { icon: Icons.bike, label: "Bike Trails", screen: "recs" },
               { icon: Icons.wave, label: "Beaches", screen: "recs" },
               { icon: Icons.fork, label: "Dining", screen: "recs" },
-              { icon: Icons.rules, label: "House Rules", screen: "rules" },
             ].map(item => (
-              <Card key={item.label} theme={theme} onClick={() => setScreen(item.screen)} style={{ padding: "16px" }}>
-                <div style={{ marginBottom: 8, color: theme.accent }}>{item.icon(theme.accent)}</div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}>{item.label}</div>
-              </Card>
-            ))}
+              <Card key={item.label} theme={theme} onClick={() => setScreen(item.screen)} className="quick-tile" style={{ padding: "16px", "--tile-accent": theme.accent }}>
+                <div className="quick-tile-icon" style={{ marginBottom: 8, color: theme.accent }}>{item.icon(theme.accent)}</div>
+                <div className="quick-tile-label" style={{ fontSize: 14, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}>{item.label}</div>
+              </Card>))}
           </div>
         </div>
         </div>
@@ -404,7 +462,7 @@ function CalendarScreen({ setScreen, setBookingDates, theme }) {
         <div style={{ padding: "20px 0 0" }}>
           {/* Header */}
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 18 }}>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 34, color: theme.text, letterSpacing: "-0.015em" }}>
+            <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 34, color: theme.text, letterSpacing: "-0.015em" }}>
               {MONTHS[viewMonth]} <span style={{ color: theme.textMuted }}>{viewYear}</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -431,7 +489,7 @@ function CalendarScreen({ setScreen, setBookingDates, theme }) {
                     transition: "all 0.15s", textAlign: "center"
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.75 }}>{MONTHS_SHORT[m]}</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 1, fontFamily: "'DM Serif Display', serif" }}>{f ? f.family[0] : "—"}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginTop: 1, fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase" }}>{f ? f.family[0] : "—"}</div>
                   </button>
                 );
               })}
@@ -616,7 +674,7 @@ function BookScreen({ currentUser, bookingDates, setScreen, theme }) {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12L10 17L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
         </div>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>Request sent</div>
+        <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>Request sent</div>
         <div style={{ fontSize: 15, color: theme.textMuted, maxWidth: 280, lineHeight: 1.5, marginBottom: 28 }}>
           {fmtRange(checkIn, checkOut)} · {guests.length} guests<br />
           The family will see this and chime in.
@@ -658,7 +716,7 @@ function BookScreen({ currentUser, bookingDates, setScreen, theme }) {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <div style={{ fontSize: 12, color: theme.accent, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", marginBottom: 4 }}>Your stay</div>
-                      <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.accentDeep, lineHeight: 1.1 }}>{nights} night{nights > 1 ? "s" : ""}</div>
+                      <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.accentDeep, lineHeight: 1.1 }}>{nights} night{nights > 1 ? "s" : ""}</div>
                     </div>
                     <div style={{ fontSize: 13, color: theme.accentDeep, opacity: 0.7, textAlign: "right" }}>
                       {fmtRange(checkIn, checkOut)}
@@ -748,7 +806,7 @@ function MyTripsScreen({ currentUser, setScreen, theme }) {
               <div style={{ width: 72, height: 72, borderRadius: "50%", background: theme.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
                 {Icons.trips(theme.accent)}
               </div>
-              <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.text, marginBottom: 6, letterSpacing: "-0.01em" }}>No trips yet</div>
+              <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.text, marginBottom: 6, letterSpacing: "-0.01em" }}>No trips yet</div>
               <div style={{ fontSize: 14, color: theme.textMuted, marginBottom: 24 }}>Plan your next stay at the house.</div>
               <Btn onClick={() => setScreen("book")} theme={theme} variant="accent" size="lg">Book a Stay</Btn>
             </div>
@@ -765,7 +823,7 @@ function MyTripsScreen({ currentUser, setScreen, theme }) {
                       <span style={{ fontSize: 12, color: theme.textSubtle }}>{nightsBetween(r.checkIn, r.checkOut)} nights</span>
                       {isPast && <span style={{ fontSize: 11, color: theme.textSubtle, fontStyle: "italic" }}>Past</span>}
                     </div>
-                    <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+                    <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1 }}>
                       {fmtRange(r.checkIn, r.checkOut)}
                     </div>
                     <div style={{ fontSize: 13, color: theme.textMuted, marginTop: 4 }}>
@@ -789,7 +847,7 @@ function MyTripsScreen({ currentUser, setScreen, theme }) {
                       <div style={{ fontSize: 11, fontWeight: 600, color: theme.textSubtle, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6 }}>Guests</div>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                         {r.guests.map((g, i) => (
-                          <span key={i} style={{ padding: "4px 11px", background: theme.surfaceAlt, borderRadius: 99, fontSize: 12, color: theme.text }}>{g}</span>
+                          <span key={i} className="pill-badge" style={{ padding: "4px 11px", background: theme.surfaceAlt, borderRadius: 99, fontSize: 12, color: theme.text, "--pc": theme.text }}>{g}</span>
                         ))}
                       </div>
                     </div>
@@ -820,13 +878,14 @@ function MyTripsScreen({ currentUser, setScreen, theme }) {
 // HOUSE INFO (3 tabs)
 // ──────────────────────────────────────────────────────────────
 function HouseInfoScreen({ setScreen, theme, initialTab }) {
-  const [tab, setTab] = React.useState(initialTab || "info");
+  const [tab, setTab] = React.useState(initialTab || "rules");
   const info = APP_DATA.houseInfo;
 
   const tabs = [
     { id: "info", label: "House" },
     { id: "rules", label: "Rules" },
-    { id: "recs", label: "Around" }
+    { id: "recs", label: "Around" },
+    { id: "lights", label: "Lights" }
   ];
 
   return (
@@ -854,9 +913,22 @@ function HouseInfoScreen({ setScreen, theme, initialTab }) {
           {tab === "info" && <InfoTab info={info} theme={theme} setScreen={setScreen} />}
           {tab === "rules" && <RulesTab theme={theme} />}
           {tab === "recs" && <RecsTab theme={theme} />}
+          {tab === "lights" && <LightsTab theme={theme} />}
         </div>
       </Screen>
     </div>
+  );
+}
+
+function LightsTab({ theme }) {
+  return (
+    <Card theme={theme} hoverable={false} style={{ textAlign: "center", padding: "48px 20px" }}>
+      <div style={{ width: 56, height: 56, borderRadius: "50%", background: theme.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+        {Icons.settings(theme.accent)}
+      </div>
+      <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 18, color: theme.text, marginBottom: 6 }}>Lights — coming soon</div>
+      <div style={{ fontSize: 13, color: theme.textMuted }}>Smart lighting controls for the house will live here.</div>
+    </Card>
   );
 }
 
@@ -885,28 +957,11 @@ function InfoTab({ info, theme, setScreen }) {
         ].map(s => (
           <div key={s.label} style={{ background: theme.surface, border: `0.5px solid ${theme.border}`, borderRadius: 14, padding: "14px 8px", textAlign: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", marginBottom: 6, color: theme.accent }}>{s.icon(theme.accent)}</div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.text, lineHeight: 1 }}>{s.value}</div>
+            <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.text, lineHeight: 1 }}>{s.value}</div>
             <div style={{ fontSize: 11, color: theme.textMuted, marginTop: 4 }}>{s.label}</div>
           </div>
         ))}
       </div>
-
-      {/* Photos CTA */}
-      <button onClick={() => setScreen && setScreen("gallery")} style={{
-        position: "relative", border: "none", padding: 0, cursor: "pointer",
-        borderRadius: 18, overflow: "hidden", width: "100%", aspectRatio: "16/7",
-        backgroundImage: "url('photos/IMG_3250.jpg')", backgroundSize: "cover", backgroundPosition: "center",
-        fontFamily: "'DM Sans', sans-serif"
-      }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(31,27,22,0.7) 0%, rgba(31,27,22,0.15) 70%)" }}></div>
-        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", padding: "0 20px", color: "#fff", textAlign: "left" }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.75)", fontWeight: 500, marginBottom: 3, whiteSpace: "nowrap" }}>Photo Gallery</div>
-          <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, lineHeight: 1.1 }}>Take a look inside</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", marginTop: 5, display: "flex", alignItems: "center", gap: 5 }}>
-            {APP_DATA.gallery.length} photos · View all {Icons.chevron("rgba(255,255,255,0.85)")}
-          </div>
-        </div>
-      </button>
 
       {/* Access */}
       <div>
@@ -958,7 +1013,7 @@ function RulesTab({ theme }) {
   return (
     <>
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>House Rules</div>
+        <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>House Rules</div>
         <div style={{ fontSize: 14, color: theme.textMuted }}>Keep things smooth so both families can enjoy.</div>
       </div>
       <Card theme={theme} style={{ padding: 0 }}>
@@ -997,7 +1052,7 @@ function RecsTab({ theme }) {
   return (
     <>
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>Around the House</div>
+        <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 22, color: theme.text, letterSpacing: "-0.01em", marginBottom: 4, lineHeight: 1.1 }}>Around the House</div>
         <div style={{ fontSize: 14, color: theme.textMuted }}>Family favorites within walking or short drive of Shelter Cove.</div>
       </div>
 
@@ -1054,7 +1109,7 @@ function BikeMap({ theme }) {
       <div style={{ padding: "14px 16px 12px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <div style={{ color: theme.accent }}>{Icons.bike(theme.accent)}</div>
-          <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: theme.text, lineHeight: 1.1 }}>Island Trail Map</span>
+          <span style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 18, color: theme.text, lineHeight: 1.1 }}>Island Trail Map</span>
         </div>
         <div style={{ fontSize: 13, color: theme.textMuted, lineHeight: 1.45 }}>
           Hilton Head has 60+ miles of public bike paths. Tap a layer in the legend to see routes, then pinch to zoom around Shelter Cove.
@@ -1091,7 +1146,7 @@ function RecList({ items, theme }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {items.map((item, i) => (
-        <Card key={i} theme={theme} style={{ padding: "14px 16px" }}>
+        <Card key={i} theme={theme} className="quick-tile" style={{ padding: "14px 16px" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
@@ -1107,7 +1162,7 @@ function RecList({ items, theme }) {
                 Directions{item.walk ? ` · ${item.walk}` : ""}
               </a>
             </div>
-            <span style={{ padding: "3px 9px", background: theme.surfaceAlt, color: theme.textMuted, borderRadius: 99, fontSize: 10, fontWeight: 600, flexShrink: 0, letterSpacing: "0.02em", textTransform: "uppercase" }}>{item.tag}</span>
+            <span className="rec-tag" style={{ padding: "3px 9px", background: theme.surfaceAlt, color: theme.textMuted, borderRadius: 99, fontSize: 10, fontWeight: 600, flexShrink: 0, letterSpacing: "0.02em", textTransform: "uppercase" }}>{item.tag}</span>
           </div>
         </Card>
       ))}
@@ -1230,7 +1285,7 @@ function AdminScreen({ currentUser, setScreen, theme }) {
                       <span style={{ fontSize: 14, fontWeight: 600, color: theme.text }}>{r.userName}</span>
                       <Badge status={r.status} theme={theme} />
                     </div>
-                    <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 18, color: theme.text, letterSpacing: "-0.005em", lineHeight: 1.1, marginBottom: 4 }}>
+                    <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 18, color: theme.text, letterSpacing: "-0.005em", lineHeight: 1.1, marginBottom: 4 }}>
                       {fmtRange(r.checkIn, r.checkOut)}
                     </div>
                     <div style={{ fontSize: 12, color: theme.textMuted }}>
@@ -1747,7 +1802,7 @@ function SuppliesScreen({ currentUser, setScreen, theme }) {
                 background: statusMeta[s.key].bg, border: "none", borderRadius: 14, padding: "14px 8px",
                 cursor: "pointer", fontFamily: "'DM Sans', sans-serif", textAlign: "center"
               }}>
-                <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: statusMeta[s.key].color, lineHeight: 1 }}>{s.n}</div>
+                <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 26, color: statusMeta[s.key].color, lineHeight: 1 }}>{s.n}</div>
                 <div style={{ fontSize: 11, color: statusMeta[s.key].color, marginTop: 4, fontWeight: 600, letterSpacing: "0.02em" }}>{s.label}</div>
               </button>
             ))}
@@ -1858,7 +1913,7 @@ function CheckoutScreen({ currentUser, setScreen, theme }) {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12L10 17L19 7" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
         </div>
-        <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>All set!</div>
+        <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>All set!</div>
         <div style={{ fontSize: 15, color: theme.textMuted, maxWidth: 280, lineHeight: 1.5, marginBottom: 28 }}>
           The next family will get a notification with the supply status and your handoff notes.
         </div>
@@ -1884,7 +1939,7 @@ function CheckoutScreen({ currentUser, setScreen, theme }) {
         <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 16 }}>
 
           <div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1, marginBottom: 6 }}>
+            <div style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", fontSize: 24, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1, marginBottom: 6 }}>
               Leave it better than you found it.
             </div>
             <div style={{ fontSize: 14, color: theme.textMuted }}>

@@ -26,6 +26,31 @@ const THEMES = {
       denied: "#F0DAD8", deniedText: "#8B1A1A"
     }
   },
+  papaya: {
+    name: "Papaya",
+    // McLaren F1 / Lando Norris — papaya orange + McLaren blue
+    bg: "#F7F5F2",
+    surface: "#FFFFFF",
+    surfaceAlt: "#F0EDE8",
+    surfaceTint: "#FFF6EE",
+    accent: "#FF8000",        // McLaren papaya
+    accentSoft: "#FFE6CC",
+    accentDeep: "#CC5F00",
+    ocean: "#00A19C",         // McLaren blue/teal
+    oceanSoft: "#D7F0EE",
+    text: "#141C2B",          // MCL deep navy
+    textMuted: "#5C6470",
+    textSubtle: "#98A0AA",
+    border: "#E7E2DA",
+    borderSoft: "#F0EDE8",
+    headerBg: "#141C2B",
+    headerText: "#FFFFFF",
+    badge: {
+      approved: "#D7F0EE", approvedText: "#00726E",
+      pending: "#FFE6CC", pendingText: "#B85800",
+      denied: "#F5D6D2", deniedText: "#A32A1E"
+    }
+  },
   dusk: {
     name: "Dusk",
     // Dark mode — warm charcoal + same terracotta/ocean accents
@@ -90,8 +115,8 @@ window.Icons = Icons;
 
 // Family color tokens
 const FAMILY_COLORS = {
-  Pierce: { primary: "#C96442", soft: "#F5E6DD", deep: "#8B4220", letter: "P" },
-  Thomas: { primary: "#5B8BA8", soft: "#DDE7EE", deep: "#3A627A", letter: "T" }
+  Pierce: { primary: "#FF8000", soft: "#FFE6CC", deep: "#CC5F00", letter: "P" },
+  Thomas: { primary: "#00A19C", soft: "#D7F0EE", deep: "#00726E", letter: "T" }
 };
 window.FAMILY_COLORS = FAMILY_COLORS;
 
@@ -115,8 +140,8 @@ function Badge({ status, theme, family }) {
   if (family) {
     const fc = FAMILY_COLORS[family];
     return (
-      <span style={{
-        background: fc.soft, color: fc.deep,
+      <span className="pill-badge" style={{
+        background: fc.soft, color: fc.deep, "--pc": fc.deep,
         padding: "3px 10px", borderRadius: 99,
         fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
         display: "inline-flex", alignItems: "center", gap: 5
@@ -134,32 +159,38 @@ function Badge({ status, theme, family }) {
   };
   const s = map[status] || map.pending;
   return (
-    <span style={{
-      background: s.bg, color: s.color,
-      padding: "3px 10px", borderRadius: 99,
-      fontSize: 11, fontWeight: 600, letterSpacing: "0.02em"
+    <span className="pill-badge" style={{
+      background: s.bg, color: s.color, "--pc": s.color,
+      padding: "3px 10px", borderRadius: 3,
+      fontSize: 11, fontWeight: 700, letterSpacing: "0.04em",
+      fontFamily: "'JetBrains Mono', 'DM Sans', monospace", textTransform: "uppercase"
     }}>{s.label}</span>
   );
 }
 
-// Card — refined Apple-style
-function Card({ children, style = {}, onClick, theme, hoverable = true }) {
+// Card — telemetry panel: sharp corners, accent top rail
+function Card({ children, style = {}, onClick, theme, hoverable = true, className }) {
   const [press, setPress] = React.useState(false);
+  const cls = [onClick && hoverable ? "quick-tile" : "", className].filter(Boolean).join(" ");
   return (
     <div
+      className={cls}
       onClick={onClick}
       onMouseDown={() => onClick && setPress(true)}
       onMouseUp={() => setPress(false)}
       onMouseLeave={() => setPress(false)}
       style={{
         background: theme.surface,
-        border: `0.5px solid ${theme.border}`,
-        borderRadius: 20,
+        border: `1px solid ${theme.border}`,
+        borderTop: `3px solid ${theme.accent}`,
+        borderRadius: 4,
         padding: "18px 20px",
         cursor: onClick ? "pointer" : "default",
         transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
         boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
         transform: press ? "scale(0.985)" : "scale(1)",
+        "--tile-accent": theme.accent,
+        "--tile-accent-deep": theme.accentDeep,
         ...style
       }}
     >{children}</div>
@@ -170,16 +201,16 @@ function Card({ children, style = {}, onClick, theme, hoverable = true }) {
 function Btn({ children, onClick, variant = "primary", size = "md", style = {}, disabled = false, theme, full = false }) {
   const [press, setPress] = React.useState(false);
   const base = {
-    border: "none", borderRadius: 12, cursor: disabled ? "not-allowed" : "pointer",
-    fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+    border: "none", borderRadius: 6, cursor: disabled ? "not-allowed" : "pointer",
+    fontFamily: "'Titillium Web', sans-serif", fontWeight: 700,
+    textTransform: "uppercase", letterSpacing: "0.03em",
     transition: "transform 0.1s, opacity 0.15s, background 0.15s",
     display: "inline-flex", alignItems: "center", justifyContent: "center",
     gap: 6, opacity: disabled ? 0.4 : 1,
     padding: size === "sm" ? "7px 14px" : size === "lg" ? "15px 24px" : "11px 18px",
-    fontSize: size === "sm" ? 13 : size === "lg" ? 15 : 14,
+    fontSize: size === "sm" ? 12 : size === "lg" ? 14 : 13,
     transform: press && !disabled ? "scale(0.97)" : "scale(1)",
-    width: full ? "100%" : "auto",
-    letterSpacing: "-0.005em"
+    width: full ? "100%" : "auto"
   };
   const variants = {
     primary: { background: theme.text, color: "#fff" },
@@ -255,37 +286,28 @@ function navLinks(currentUser) {
   return base;
 }
 
-// Site header — top navbar (desktop) + hamburger drawer (mobile)
+// Site header — two-row racing layout: brand/user row, then nav row w/ livery stripe
 function SiteHeader({ screen, setScreen, currentUser, theme, navStyle, showAdminBadge, onLogout, mobileOpen, setMobileOpen }) {
   const items = navLinks(currentUser);
   const isActive = (id) => screen === id || (id === "info" && ["rules", "recs"].includes(screen));
+  const today = new Date().toISOString().split("T")[0];
+  const myNext = APP_DATA.reservations
+    .filter(r => r.checkIn >= today && r.status !== "denied" && r.userId === currentUser.id)
+    .sort((a, b) => a.checkIn.localeCompare(b.checkIn))[0];
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 200, background: `${theme.surface}CC`, backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", borderBottom: `0.5px solid ${theme.border}` }}>
-      <div style={{ maxWidth: 1250, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 62, gap: 20 }}>
+      <div style={{ maxWidth: 1250, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, gap: 20, position: "relative" }}>
         <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 8, background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'DM Serif Display', serif", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>S</div>
-          <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 17, color: theme.text, whiteSpace: "nowrap" }}>Shelter Cove</span>
+          <div style={{ width: 30, height: 30, borderRadius: 4, background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "'Titillium Web', sans-serif", fontWeight: 900, fontSize: 15, flexShrink: 0 }}>S</div>
+          <span style={{ fontFamily: "'Titillium Web', sans-serif", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em", fontSize: 16, color: theme.text, whiteSpace: "nowrap" }}>Shelter Cove</span>
         </button>
-
-        {navStyle === "top" && (
-          <nav className="om-desktop-only" style={{ display: "flex", gap: 2 }}>
-            {items.map(it => (
-              <button key={it.id} onClick={() => setScreen(it.id)} style={{
-                padding: "8px 14px", borderRadius: 8, border: "none", cursor: "pointer", whiteSpace: "nowrap",
-                background: isActive(it.id) ? theme.surfaceAlt : "transparent",
-                color: isActive(it.id) ? theme.text : theme.textMuted,
-                fontSize: 13, fontWeight: 600, fontFamily: "'DM Sans', sans-serif"
-              }}>{it.label}</button>
-            ))}
-          </nav>
-        )}
 
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div className="om-desktop-only" style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Avatar initials={currentUser.avatar} size={26} family={currentUser.family} />
             <span style={{ fontSize: 12, color: theme.textMuted, fontWeight: 500, whiteSpace: "nowrap" }}>{currentUser.family} family</span>
             {currentUser.role === "admin" && showAdminBadge && (
-              <span style={{ fontSize: 9, padding: "2px 7px", background: theme.text, color: "#fff", borderRadius: 99, fontWeight: 600, letterSpacing: "0.06em" }}>ADMIN</span>
+              <span style={{ fontSize: 9, padding: "2px 7px", background: theme.text, color: "#fff", borderRadius: 3, fontWeight: 700, letterSpacing: "0.06em", fontFamily: "'JetBrains Mono', monospace" }}>ADMIN</span>
             )}
             <button onClick={onLogout} style={{ fontSize: 12, color: theme.textMuted, background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", padding: 0, marginLeft: 6, whiteSpace: "nowrap", flexShrink: 0 }}>Sign out</button>
           </div>
@@ -294,6 +316,38 @@ function SiteHeader({ screen, setScreen, currentUser, theme, navStyle, showAdmin
           </button>
         </div>
       </div>
+
+      {navStyle === "top" && (
+        <nav className="om-desktop-only" style={{
+          maxWidth: 1250, margin: "0 auto", padding: "0 24px", gap: 2, height: 42,
+          background: theme.text, justifyContent: "space-between"
+        }}>
+          <div style={{ display: "flex", height: "100%" }}>
+          {items.map(it => (
+            <button key={it.id} onClick={() => setScreen(it.id)} style={{
+              padding: "0 16px", height: "100%", borderRadius: 0, border: "none", cursor: "pointer", whiteSpace: "nowrap",
+              background: "transparent", position: "relative",
+              color: isActive(it.id) ? "#fff" : "rgba(255,255,255,0.6)",
+              fontSize: 12, fontWeight: 700, fontFamily: "'Titillium Web', sans-serif",
+              textTransform: "uppercase", letterSpacing: "0.05em"
+            }}>
+              {it.label}
+              {isActive(it.id) && <span style={{ position: "absolute", left: 10, right: 10, bottom: 0, height: 3, background: theme.accent, clipPath: "polygon(6% 0,100% 0,94% 100%,0 100%)" }}></span>}
+            </button>
+          ))}
+          </div>
+          {myNext && (
+            <button onClick={() => setScreen("mytrips")} style={{
+              display: "flex", alignItems: "center", gap: 8, background: theme.accent, border: "none", cursor: "pointer",
+              padding: "5px 12px", borderRadius: 4, margin: "8px 0"
+            }}>
+              <span style={{ fontSize: 9, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 700 }}>Next Stay</span>
+              <span style={{ fontSize: 12, color: "#fff", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>{fmtRange(myNext.checkIn, myNext.checkOut)}</span>
+              <Badge status={myNext.status} theme={theme} />
+            </button>
+          )}
+        </nav>
+      )}
 
       {mobileOpen && (
         <div className="om-mobile-only" style={{ flexDirection: "column", borderTop: `0.5px solid ${theme.border}`, padding: "10px 20px 18px", background: `${theme.surface}F2`, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
@@ -324,7 +378,7 @@ function SidebarNav({ screen, setScreen, currentUser, theme }) {
       width: 220, flexShrink: 0, borderRight: `0.5px solid ${theme.border}`,
       background: theme.surfaceTint,
       padding: "20px 12px", flexDirection: "column", gap: 2,
-      height: "calc(100vh - 62px)", position: "sticky", top: 62, overflowY: "auto"
+      height: "calc(100vh - 103px)", position: "sticky", top: 103, overflowY: "auto"
     }}>
       {items.map(it => (
         <button key={it.id} onClick={() => setScreen(it.id)} style={{
@@ -345,16 +399,16 @@ function SidebarNav({ screen, setScreen, currentUser, theme }) {
 // Top Bar — large title style (Apple)
 function TopBar({ title, subtitle, right, left, theme }) {
   return (
-    <div style={{
+    <div className="site-topbar" style={{
       background: `${theme.bg}CC`, backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
       padding: "14px 20px 12px",
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      gap: 12, flexShrink: 0, position: "sticky", top: 62, zIndex: 50,
+      gap: 12, flexShrink: 0, position: "sticky", zIndex: 50,
       borderBottom: `0.5px solid ${theme.borderSoft}`
     }}>
       <div style={{ width: 36 }}>{left}</div>
       <div style={{ textAlign: "center", flex: 1 }}>
-        <div style={{ fontSize: 17, fontWeight: 600, color: theme.text, letterSpacing: "-0.01em" }}>{title}</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: theme.text, letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: "'Titillium Web', sans-serif" }}>{title}</div>
         {subtitle && <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 1 }}>{subtitle}</div>}
       </div>
       <div style={{ width: 36, display: "flex", justifyContent: "flex-end" }}>{right}</div>
@@ -369,7 +423,7 @@ function Screen({ children, style = {} }) {
 function SectionLabel({ children, theme, action, onAction, style = {} }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, padding: "0 4px", ...style }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}>{children}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: theme.text, letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "'Titillium Web', sans-serif", borderLeft: `3px solid ${theme.accent}`, paddingLeft: 8 }}>{children}</span>
       {action && <button onClick={onAction} style={{ fontSize: 13, color: theme.accent, background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}>{action}</button>}
     </div>
   );

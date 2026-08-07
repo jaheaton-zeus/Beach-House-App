@@ -10,7 +10,7 @@ html, body {
 
 :root {
   --font-sans: 'DM Sans', sans-serif;
-  --font-display: 'DM Serif Display', serif;
+  --font-display: 'Titillium Web', sans-serif;
 }
 
 body {
@@ -29,6 +29,49 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #c5bfb4;
   border-radius: 3px;
+}
+
+/* Two-row racing-stripe header: TopBar sticks below both rows */
+.site-topbar {
+  top: 61px;
+}
+@media (min-width: 860px) {
+  .site-topbar {
+    top: 103px;
+  }
+}
+
+/* Quick-access tiles invert to the accent color on hover */
+.quick-tile {
+  transition: background 0.15s, color 0.15s;
+}
+.quick-tile:hover {
+  background: var(--tile-accent) !important;
+}
+.quick-tile:hover *,
+.quick-tile:hover svg path,
+.quick-tile:hover svg circle {
+  color: #fff !important;
+}
+.quick-tile:hover .quick-tile-icon {
+  color: #fff !important;
+}
+.quick-tile:hover .quick-tile-icon svg path[fill="none"],
+.quick-tile:hover .quick-tile-icon svg circle[fill="none"] {
+  fill: none !important;
+}
+.quick-tile:hover .quick-tile-icon svg path,
+.quick-tile:hover .quick-tile-icon svg circle {
+  stroke: #fff !important;
+}
+.quick-tile:hover .quick-tile-label {
+  color: #fff !important;
+}
+.quick-tile:hover .rec-tag {
+  color: #3a3a3a !important;
+}
+.quick-tile:hover .pill-badge {
+  color: var(--pc) !important;
 }
 
 /* Responsive nav visibility, ported from the prototype's inline <style> tag */

@@ -28,7 +28,19 @@ export function CheckoutView({ theme, items, lowItems }: { theme: ThemeColors; i
             </svg>
           </div>
         </div>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>All set!</div>
+        <div
+          style={{
+            fontFamily: FONT_DISPLAY,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            fontSize: 28,
+            color: theme.text,
+            marginBottom: 10,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          All set!
+        </div>
         <div style={{ fontSize: 15, color: theme.textMuted, maxWidth: 280, lineHeight: 1.5, marginBottom: 28 }}>
           The next family will get a notification with the supply status and your handoff notes.
         </div>
@@ -59,7 +71,18 @@ export function CheckoutView({ theme, items, lowItems }: { theme: ThemeColors; i
       <div style={{ flex: 1, overflowY: "auto", paddingBottom: 60 }}>
         <div style={{ padding: "16px 20px 0", display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <div style={{ fontFamily: FONT_DISPLAY, fontSize: 24, color: theme.text, letterSpacing: "-0.01em", lineHeight: 1.1, marginBottom: 6 }}>
+            <div
+              style={{
+                fontFamily: FONT_DISPLAY,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                fontSize: 24,
+                color: theme.text,
+                letterSpacing: "-0.01em",
+                lineHeight: 1.1,
+                marginBottom: 6,
+              }}
+            >
               Leave it better than you found it.
             </div>
             <div style={{ fontSize: 14, color: theme.textMuted }}>Quick check before you head out — takes 5 min.</div>

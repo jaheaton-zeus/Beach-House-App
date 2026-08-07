@@ -73,7 +73,16 @@ export function LoginForm({
           >
             Shelter Cove
           </div>
-          <div style={{ fontFamily: FONT_DISPLAY, fontSize: 38, lineHeight: 1.05, letterSpacing: "-0.015em" }}>
+          <div
+            style={{
+              fontFamily: FONT_DISPLAY,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              fontSize: 36,
+              lineHeight: 1.4,
+              letterSpacing: "0",
+            }}
+          >
             The Pierce/Thomas
             <br />
             Beach House

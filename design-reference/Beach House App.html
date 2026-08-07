@@ -6,7 +6,7 @@
   <title>The Pierce/Thomas Beach House</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&family=Titillium+Web:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -23,7 +23,18 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #c5bfb4; border-radius: 3px; }
-    .om-mobile-only { display: none; }
+    .f1-checker { height: 5px; background-image: repeating-conic-gradient(#141C2B 0% 25%, transparent 0% 50%); background-size: 10px 10px; }
+    .site-topbar { top: 61px; }
+    @media (min-width: 860px) { .site-topbar { top: 103px; } }
+    .quick-tile { transition: background 0.15s, color 0.15s; }
+    .quick-tile:hover { background: var(--tile-accent) !important; }
+    .quick-tile:hover *, .quick-tile:hover svg path, .quick-tile:hover svg circle { color: #fff !important; }
+    .quick-tile:hover .quick-tile-icon { color: #fff !important; }
+    .quick-tile:hover .quick-tile-icon svg path[fill="none"], .quick-tile:hover .quick-tile-icon svg circle[fill="none"] { fill: none !important; }
+    .quick-tile:hover .quick-tile-icon svg path, .quick-tile:hover .quick-tile-icon svg circle { stroke: #fff !important; }
+    .quick-tile:hover .quick-tile-label { color: #fff !important; }
+    .quick-tile:hover .rec-tag { color: #3a3a3a !important; }
+    .quick-tile:hover .pill-badge { color: var(--pc) !important; }
     .home-dashboard.grid { display: block; }
     @media (min-width: 860px) {
       .om-mobile-only { display: none !important; }

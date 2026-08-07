@@ -10,7 +10,7 @@ function App() {
   const { TweaksPanel, TweakSection, TweakToggle, TweakRadio, useTweaks } = window;
   const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
 
-  const theme = THEMES.shore;
+  const theme = THEMES.papaya;
 
   const [currentUser, setCurrentUser] = React.useState(null);
   const [screen, setScreen] = React.useState("home");
@@ -47,7 +47,7 @@ function App() {
       case "book": return <BookScreen currentUser={currentUser} bookingDates={bookingDates} setScreen={navigate} theme={theme} />;
       case "mytrips": return <MyTripsScreen currentUser={currentUser} setScreen={navigate} theme={theme} />;
       case "info": case "rules": case "recs":
-        return <HouseInfoScreen setScreen={navigate} theme={theme} initialTab={screen === "rules" ? "rules" : screen === "recs" ? "recs" : "info"} />;
+        return <HouseInfoScreen setScreen={navigate} theme={theme} initialTab={screen === "rules" ? "rules" : screen === "recs" ? "recs" : "rules"} />;
       case "supplies": return <SuppliesScreen currentUser={currentUser} setScreen={navigate} theme={theme} />;
       case "gallery": return <GalleryScreen setScreen={navigate} theme={theme} />;
       case "checkout": return <CheckoutScreen currentUser={currentUser} setScreen={navigate} theme={theme} />;

@@ -58,18 +58,22 @@ export function Badge({
     const fc = FAMILY_COLORS[family];
     return (
       <span
-        style={{
-          background: fc.soft,
-          color: fc.deep,
-          padding: "3px 10px",
-          borderRadius: 99,
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: "0.02em",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 5,
-        }}
+        className="pill-badge"
+        style={
+          {
+            background: fc.soft,
+            color: fc.deep,
+            "--pc": fc.deep,
+            padding: "3px 10px",
+            borderRadius: 99,
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.02em",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 5,
+          } as CSSProperties
+        }
       >
         <span style={{ width: 6, height: 6, borderRadius: "50%", background: fc.primary }} />
         {family}
@@ -85,51 +89,68 @@ export function Badge({
   const s = map[status || "pending"];
   return (
     <span
-      style={{
-        background: s.bg,
-        color: s.color,
-        padding: "3px 10px",
-        borderRadius: 99,
-        fontSize: 11,
-        fontWeight: 600,
-        letterSpacing: "0.02em",
-      }}
+      className="pill-badge"
+      style={
+        {
+          background: s.bg,
+          color: s.color,
+          "--pc": s.color,
+          padding: "3px 10px",
+          borderRadius: 3,
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          fontFamily: "'JetBrains Mono', 'DM Sans', monospace",
+          textTransform: "uppercase",
+        } as CSSProperties
+      }
     >
       {s.label}
     </span>
   );
 }
 
-// ── Card ────────────────────────────────────────────────────
+// ── Card — telemetry panel: sharp corners, accent top rail ────
 export function Card({
   children,
   style = {},
   onClick,
   theme,
+  hoverable = true,
+  className,
 }: {
   children: ReactNode;
   style?: CSSProperties;
   onClick?: () => void;
   theme: ThemeColors;
+  hoverable?: boolean;
+  className?: string;
 }) {
   const [press, setPress] = useState(false);
+  const cls = [onClick && hoverable ? "quick-tile" : "", className].filter(Boolean).join(" ");
   return (
     <div
+      className={cls || undefined}
       onClick={onClick}
       onMouseDown={() => onClick && setPress(true)}
       onMouseUp={() => setPress(false)}
       onMouseLeave={() => setPress(false)}
-      style={{
-        background: theme.surface,
-        border: `0.5px solid ${theme.border}`,
-        borderRadius: 20,
-        padding: "18px 20px",
-        cursor: onClick ? "pointer" : "default",
-        transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
-        boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
-        transform: press ? "scale(0.985)" : "scale(1)",
-        ...style,
-      }}
+      style={
+        {
+          background: theme.surface,
+          border: `1px solid ${theme.border}`,
+          borderTop: `3px solid ${theme.accent}`,
+          borderRadius: 4,
+          padding: "18px 20px",
+          cursor: onClick ? "pointer" : "default",
+          transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
+          boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
+          transform: press ? "scale(0.985)" : "scale(1)",
+          "--tile-accent": theme.accent,
+          "--tile-accent-deep": theme.accentDeep,
+          ...style,
+        } as CSSProperties
+      }
     >
       {children}
     </div>
@@ -144,27 +165,35 @@ export function CardLink({
   children,
   style = {},
   theme,
+  className,
 }: {
   href: string;
   children: ReactNode;
   style?: CSSProperties;
   theme: ThemeColors;
+  className?: string;
 }) {
   return (
     <Link
       href={href}
-      style={{
-        display: "block",
-        textDecoration: "none",
-        color: "inherit",
-        background: theme.surface,
-        border: `0.5px solid ${theme.border}`,
-        borderRadius: 20,
-        padding: "18px 20px",
-        boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
-        transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
-        ...style,
-      }}
+      className={className}
+      style={
+        {
+          display: "block",
+          textDecoration: "none",
+          color: "inherit",
+          background: theme.surface,
+          border: `1px solid ${theme.border}`,
+          borderTop: `3px solid ${theme.accent}`,
+          borderRadius: 4,
+          padding: "18px 20px",
+          boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
+          transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
+          "--tile-accent": theme.accent,
+          "--tile-accent-deep": theme.accentDeep,
+          ...style,
+        } as CSSProperties
+      }
     >
       {children}
     </Link>
@@ -196,10 +225,12 @@ export function Btn({
   const [press, setPress] = useState(false);
   const base: CSSProperties = {
     border: "none",
-    borderRadius: 12,
+    borderRadius: 6,
     cursor: disabled ? "not-allowed" : "pointer",
-    fontFamily: FONT_SANS,
-    fontWeight: 500,
+    fontFamily: "'Titillium Web', sans-serif",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    letterSpacing: "0.03em",
     transition: "transform 0.1s, opacity 0.15s, background 0.15s",
     display: "inline-flex",
     alignItems: "center",
@@ -207,10 +238,9 @@ export function Btn({
     gap: 6,
     opacity: disabled ? 0.4 : 1,
     padding: size === "sm" ? "7px 14px" : size === "lg" ? "15px 24px" : "11px 18px",
-    fontSize: size === "sm" ? 13 : size === "lg" ? 15 : 14,
+    fontSize: size === "sm" ? 12 : size === "lg" ? 14 : 13,
     transform: press && !disabled ? "scale(0.97)" : "scale(1)",
     width: full ? "100%" : "auto",
-    letterSpacing: "-0.005em",
   };
   const variants: Record<string, CSSProperties> = {
     primary: { background: theme.text, color: "#fff" },
@@ -346,6 +376,7 @@ export function TopBar({
 }) {
   return (
     <div
+      className="site-topbar"
       style={{
         background: `${theme.bg}CC`,
         backdropFilter: "blur(16px)",
@@ -357,14 +388,24 @@ export function TopBar({
         gap: 12,
         flexShrink: 0,
         position: "sticky",
-        top: 62,
         zIndex: 50,
         borderBottom: `0.5px solid ${theme.borderSoft}`,
       }}
     >
       <div style={{ width: 36 }}>{left}</div>
       <div style={{ textAlign: "center", flex: 1 }}>
-        <div style={{ fontSize: 17, fontWeight: 600, color: theme.text, letterSpacing: "-0.01em" }}>{title}</div>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 700,
+            color: theme.text,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            fontFamily: "'Titillium Web', sans-serif",
+          }}
+        >
+          {title}
+        </div>
         {subtitle && <div style={{ fontSize: 12, color: theme.textMuted, marginTop: 1 }}>{subtitle}</div>}
       </div>
       <div style={{ width: 36, display: "flex", justifyContent: "flex-end" }}>{right}</div>
@@ -400,7 +441,18 @@ export function SectionLabel({
         ...style,
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: 600, color: theme.text, letterSpacing: "-0.005em" }}>
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 700,
+          color: theme.text,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          fontFamily: "'Titillium Web', sans-serif",
+          borderLeft: `3px solid ${theme.accent}`,
+          paddingLeft: 8,
+        }}
+      >
         {children}
       </span>
       {action && (

@@ -99,7 +99,17 @@ export function BookForm({
             </svg>
           </div>
         </div>
-        <div style={{ fontFamily: FONT_DISPLAY, fontSize: 28, color: theme.text, marginBottom: 10, letterSpacing: "-0.01em" }}>
+        <div
+          style={{
+            fontFamily: FONT_DISPLAY,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            fontSize: 28,
+            color: theme.text,
+            marginBottom: 10,
+            letterSpacing: "-0.01em",
+          }}
+        >
           Request sent
         </div>
         <div style={{ fontSize: 15, color: theme.textMuted, maxWidth: 280, lineHeight: 1.5, marginBottom: 28 }}>
@@ -188,7 +198,16 @@ export function BookForm({
                       >
                         Your stay
                       </div>
-                      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 22, color: theme.accentDeep, lineHeight: 1.1 }}>
+                      <div
+                        style={{
+                          fontFamily: FONT_DISPLAY,
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          fontSize: 22,
+                          color: theme.accentDeep,
+                          lineHeight: 1.1,
+                        }}
+                      >
                         {nights} night{nights > 1 ? "s" : ""}
                       </div>
                     </div>
