@@ -31,6 +31,22 @@ interface NwsForecastPeriod {
   shortForecast: string;
 }
 
+interface NwsPointResponse {
+  properties: { forecast: string; observationStations: string };
+}
+
+interface NwsStationsResponse {
+  features: { properties: { stationIdentifier: string } }[];
+}
+
+interface NwsObservationResponse {
+  properties: { temperature: { value: number | null }; textDescription: string };
+}
+
+interface NwsForecastResponse {
+  properties: { periods: NwsForecastPeriod[] };
+}
+
 function iconFor(shortForecast = ""): WeatherIconName {
   const t = shortForecast.toLowerCase();
   if (t.includes("rain") || t.includes("shower") || t.includes("storm") || t.includes("thunder")) return "rain";
@@ -85,18 +101,20 @@ export function WeatherWidget({ theme }: { theme: ThemeColors }) {
     let alive = true;
     (async () => {
       try {
-        const pt = await fetch("https://api.weather.gov/points/32.2163,-80.7526").then((r) => r.json());
-        const [forecastRes, stationsRes] = await Promise.all([
+        const pt = (await fetch("https://api.weather.gov/points/32.2163,-80.7526").then((r) =>
+          r.json()
+        )) as NwsPointResponse;
+        const [forecastRes, stationsRes] = (await Promise.all([
           fetch(pt.properties.forecast).then((r) => r.json()),
           fetch(pt.properties.observationStations).then((r) => r.json()),
-        ]);
+        ])) as [NwsForecastResponse, NwsStationsResponse];
 
         let current: CurrentConditions | null = null;
         const stationId = stationsRes.features?.[0]?.properties?.stationIdentifier;
         if (stationId) {
-          const obs = await fetch(`https://api.weather.gov/stations/${stationId}/observations/latest`).then((r) =>
+          const obs = (await fetch(`https://api.weather.gov/stations/${stationId}/observations/latest`).then((r) =>
             r.json()
-          );
+          )) as NwsObservationResponse;
           const tempC: number | null = obs.properties?.temperature?.value ?? null;
           current = {
             tempF: tempC != null ? Math.round((tempC * 9) / 5 + 32) : null,
