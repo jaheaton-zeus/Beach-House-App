@@ -69,16 +69,18 @@ export default async function HomePage() {
             <div
               style={{
                 display: "flex",
+                flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "space-between",
-                gap: 16,
+                gap: 8,
+                rowGap: 6,
                 padding: "10px 18px",
                 borderRadius: 4,
                 background: FAMILY_COLORS[currentSlot.family].soft,
                 border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33`,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, minWidth: 0, rowGap: 4 }}>
                 <div
                   style={{
                     width: 32,
@@ -132,6 +134,7 @@ export default async function HomePage() {
                   fontWeight: 600,
                   whiteSpace: "nowrap",
                   textDecoration: "none",
+                  flexShrink: 0,
                 }}
               >
                 See all →
