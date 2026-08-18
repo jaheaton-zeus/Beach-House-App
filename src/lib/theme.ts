@@ -31,32 +31,32 @@ export interface ThemeColors {
 }
 
 export const THEMES: Record<"shore" | "dusk", ThemeColors> = {
-  // McLaren F1 / Lando Norris — papaya orange + McLaren blue/teal.
+  // Coastal navy + ocean azure, replacing the earlier McLaren papaya/black reskin.
   shore: {
-    name: "Papaya",
-    bg: "#F7F5F2",
+    name: "Tidewater",
+    bg: "#F5F8FB",
     surface: "#FFFFFF",
-    surfaceAlt: "#F0EDE8",
-    surfaceTint: "#FFF6EE",
-    accent: "#FF8000",
-    accentSoft: "#FFE6CC",
-    accentDeep: "#CC5F00",
-    ocean: "#00A19C",
-    oceanSoft: "#D7F0EE",
-    text: "#141C2B",
-    textMuted: "#5C6470",
-    textSubtle: "#98A0AA",
-    border: "#E7E2DA",
-    borderSoft: "#F0EDE8",
-    headerBg: "#141C2B",
+    surfaceAlt: "#EDF3F8",
+    surfaceTint: "#E8F1FB",
+    accent: "#1D63E0",
+    accentSoft: "#DCEAFC",
+    accentDeep: "#12459E",
+    ocean: "#12A594",
+    oceanSoft: "#D3F3EE",
+    text: "#0E2A4D",
+    textMuted: "#5C6B7A",
+    textSubtle: "#93A2B0",
+    border: "#E2E9F0",
+    borderSoft: "#EEF3F8",
+    headerBg: "#0E2A4D",
     headerText: "#FFFFFF",
     badge: {
-      approved: "#D7F0EE",
-      approvedText: "#00726E",
-      pending: "#FFE6CC",
-      pendingText: "#B85800",
-      denied: "#F5D6D2",
-      deniedText: "#A32A1E",
+      approved: "#D3F3EE",
+      approvedText: "#0B7A6E",
+      pending: "#FFF1C7",
+      pendingText: "#8A6100",
+      denied: "#FCE1DC",
+      deniedText: "#B23B26",
     },
   },
   dusk: {
@@ -96,6 +96,6 @@ export interface FamilyColor {
 }
 
 export const FAMILY_COLORS: Record<"Pierce" | "Thomas", FamilyColor> = {
-  Pierce: { primary: "#FF8000", soft: "#FFE6CC", deep: "#CC5F00", letter: "P" },
-  Thomas: { primary: "#00A19C", soft: "#D7F0EE", deep: "#00726E", letter: "T" },
+  Pierce: { primary: "#FF6B4A", soft: "#FFE3DA", deep: "#C23F22", letter: "P" },
+  Thomas: { primary: "#12A594", soft: "#D3F3EE", deep: "#0B7A6E", letter: "T" },
 };

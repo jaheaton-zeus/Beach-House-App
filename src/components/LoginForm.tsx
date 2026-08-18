@@ -45,7 +45,7 @@ export function LoginForm({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(31,27,22,0.3) 0%, rgba(31,27,22,0.6) 60%, rgba(31,27,22,0.85) 100%)",
+            "linear-gradient(180deg, rgba(9,26,48,0.25) 0%, rgba(9,26,48,0.55) 60%, rgba(9,26,48,0.88) 100%)",
         }}
       />
 
@@ -76,11 +76,10 @@ export function LoginForm({
           <div
             style={{
               fontFamily: FONT_DISPLAY,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              fontSize: 36,
-              lineHeight: 1.4,
-              letterSpacing: "0",
+              fontWeight: 800,
+              fontSize: 38,
+              lineHeight: 1.15,
+              letterSpacing: "-0.02em",
             }}
           >
             The Pierce/Thomas
@@ -144,9 +143,9 @@ export function LoginForm({
                 color: theme.text,
                 border: "none",
                 padding: "14px",
-                borderRadius: 12,
+                borderRadius: 999,
                 fontSize: 15,
-                fontWeight: 600,
+                fontWeight: 700,
                 fontFamily: FONT_SANS,
                 cursor: "pointer",
                 opacity: pending ? 0.5 : 1,

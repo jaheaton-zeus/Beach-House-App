@@ -41,12 +41,11 @@ export function MyTripsView({ theme, reservations }: { theme: ThemeColors; reser
               <div
                 style={{
                   fontFamily: FONT_DISPLAY,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
+                  fontWeight: 800,
                   fontSize: 22,
                   color: theme.text,
                   marginBottom: 6,
-                  letterSpacing: "-0.01em",
+                  letterSpacing: "-0.015em",
                 }}
               >
                 No trips yet
@@ -78,11 +77,10 @@ export function MyTripsView({ theme, reservations }: { theme: ThemeColors; reser
                     <div
                       style={{
                         fontFamily: FONT_DISPLAY,
-                        fontWeight: 700,
-                        textTransform: "uppercase",
+                        fontWeight: 800,
                         fontSize: 22,
                         color: theme.text,
-                        letterSpacing: "-0.01em",
+                        letterSpacing: "-0.015em",
                         lineHeight: 1.1,
                       }}
                     >

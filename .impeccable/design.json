@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-18T14:20:00Z",
+  "title": "Design System: Shelter Cove",
+  "extensions": {
+    "colorMeta": {
+      "ocean-azure": {
+        "role": "primary",
+        "displayName": "Ocean Azure",
+        "canonical": "#1D63E0",
+        "tonalRamp": ["#06152E", "#0C2C63", "#123F8C", "#1852B4", "#1D63E0", "#5388E8", "#9AB9F2", "#DCEAFC"]
+      },
+      "deep-tide": {
+        "role": "secondary",
+        "displayName": "Deep Tide",
+        "canonical": "#0E2A4D",
+        "tonalRamp": ["#050E1A", "#0A1C33", "#0E2A4D", "#173D6B", "#22568F", "#4E7FAF", "#8CACC9", "#D6E3EC"]
+      },
+      "seafoam-teal": {
+        "role": "secondary",
+        "displayName": "Seafoam Teal",
+        "canonical": "#12A594",
+        "tonalRamp": ["#052B26", "#0B584E", "#0B7A6E", "#12A594", "#3FBFAF", "#7DD6C9", "#B4E8DF", "#D3F3EE"]
+      },
+      "coral-sunset": {
+        "role": "tertiary",
+        "displayName": "Coral Sunset",
+        "canonical": "#FF6B4A",
+        "tonalRamp": ["#3A0F04", "#7A2410", "#A6321A", "#C23F22", "#FF6B4A", "#FF9478", "#FFC0AC", "#FFE3DA"]
+      },
+      "sea-mist": {
+        "role": "neutral",
+        "displayName": "Sea Mist",
+        "canonical": "#F5F8FB",
+        "tonalRamp": ["#0E2A4D", "#5C6B7A", "#93A2B0", "#C4D0DA", "#E2E9F0", "#EDF3F8", "#F5F8FB", "#FFFFFF"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page-level headings and hero titles only." },
+      "body": { "displayName": "Body", "purpose": "All running text, form fields, card copy." },
+      "label": { "displayName": "Label", "purpose": "Short uppercase kickers under 20 characters." }
+    },
+    "shadows": [
+      { "name": "card-ambient", "value": "0 1px 1px rgba(14,42,77,0.03), 0 4px 16px rgba(14,42,77,0.06)", "purpose": "Default resting shadow for cards, tinted with Deep Tide navy instead of black." },
+      { "name": "hero-lift", "value": "0 8px 24px rgba(14,42,77,0.12)", "purpose": "Full-bleed hero/photo cards." }
+    ],
+    "motion": [
+      { "name": "press-scale", "value": "transform 0.1s ease", "purpose": "Buttons and pressable cards scale to 0.97 on press." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.34, 1.56, 0.64, 1)", "purpose": "Card hover/press transform easing." }
+    ],
+    "breakpoints": [
+      { "name": "desktop", "value": "860px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Accent action button — pill shape, Ocean Azure fill.",
+      "html": "<button class=\"ds-btn-primary\">Book Now</button>",
+      "css": ".ds-btn-primary { background: #1D63E0; color: #fff; padding: 11px 18px; border-radius: 999px; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; letter-spacing: -0.005em; cursor: pointer; transition: transform 0.1s ease, background 0.15s; } .ds-btn-primary:hover { background: #12459E; } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 3px solid #9AB9F2; outline-offset: 2px; }"
+    },
+    {
+      "name": "Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "Neutral primary action (e.g. Sign In) where azure would compete with a photo background.",
+      "html": "<button class=\"ds-btn-dark\">Sign In</button>",
+      "css": ".ds-btn-dark { background: #fff; color: #0E2A4D; padding: 14px; border-radius: 999px; border: none; font-family: 'DM Sans', sans-serif; font-weight: 700; cursor: pointer; transition: opacity 0.15s; } .ds-btn-dark:hover { opacity: 0.9; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard content card — rounded, soft navy-tinted shadow, no accent rail.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Upcoming Stay</div><div class=\"ds-card-body\">Sep 12 – 19 · 2 guests</div></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #E2E9F0; border-radius: 16px; padding: 18px 20px; box-shadow: 0 1px 1px rgba(14,42,77,0.03), 0 4px 16px rgba(14,42,77,0.06); font-family: 'DM Sans', sans-serif; } .ds-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px; color: #0E2A4D; margin-bottom: 2px; } .ds-card-body { font-size: 13px; color: #5C6B7A; }"
+    },
+    {
+      "name": "Status Badge — Approved",
+      "kind": "chip",
+      "refersTo": "badge-approved",
+      "description": "Pill status tag, sans-serif (mono retired).",
+      "html": "<span class=\"ds-badge-approved\">Approved</span>",
+      "css": ".ds-badge-approved { background: #D3F3EE; color: #0B7A6E; padding: 3px 10px; border-radius: 999px; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; display: inline-flex; align-items: center; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Rounded field with azure focus glow.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Email\" />",
+      "css": ".ds-input { border: 1px solid #E2E9F0; border-radius: 12px; padding: 12px 14px; font-size: 15px; font-family: 'DM Sans', sans-serif; background: #fff; color: #0E2A4D; outline: none; transition: all 0.15s; } .ds-input:focus { border-color: #1D63E0; box-shadow: 0 0 0 4px rgba(29,99,224,0.1); }"
+    },
+    {
+      "name": "Family Avatar",
+      "kind": "custom",
+      "refersTo": "family-avatar",
+      "description": "Circular initials avatar keyed to family identity color — Coral Sunset (Pierce) or Seafoam Teal (Thomas), never the shared accent.",
+      "html": "<div class=\"ds-avatar\" style=\"background:#FF6B4A\">SP</div>",
+      "css": ".ds-avatar { width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 16px; letter-spacing: 0.01em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Ocean Deck",
+    "overview": "Shelter Cove reads like the deck of a house that faces the water: a deep tide-navy horizon (headers, footers, hero overlays) grounds a bright, airy foreground of soft sea-mist white and one confident ocean-azure accent. Where the app's earlier identity borrowed an F1 pit-wall language — sharp corners, uppercase tracked mono labels, a racing-stripe accent rail on every card — this system replaces that with something a family actually relaxes into: rounded cards, pill-shaped buttons, soft diffuse shadows instead of hard-edged ones, and headline type that reads as confident rather than technical. The palette is Restrained-to-Committed: neutrals and white carry most surfaces, navy commits whole regions (header, nav, footers, photo overlays), and ocean-azure is the single accent that marks anything actionable — buttons, links, active nav state, the 'next stay' pill. Two family-branch colors (coral-sunset for Pierce, seafoam-teal for Thomas) exist alongside the primary azure but never compete with it: they're reserved for person/family identity — avatars, the priority banner — never for actions a user can click.",
+    "keyCharacteristics": [
+      "Deep navy grounds structural regions; white/mist surfaces carry content",
+      "One accent (ocean-azure) marks every actionable element, nothing else",
+      "Fully rounded corners and pill buttons; no sharp edges, no accent rails",
+      "Soft, diffuse shadows (never hard-edged or high-contrast)",
+      "Bold geometric display type in normal case, not uppercase-tracked"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Ocean Azure is the only color a user should ever read as \"clickable.\" Family colors, status colors, and navy never substitute for it on an actionable element.", "section": "colors" },
+      { "name": "The No-Shout Rule", "body": "Uppercase and heavy tracking are reserved for kickers under 20 characters. A full headline or button label is never set in uppercase.", "section": "typography" },
+      { "name": "The Tinted Shadow Rule", "body": "Every shadow uses rgba(14,42,77,…) (Deep Tide at low opacity), never rgba(0,0,0,…).", "section": "elevation" },
+      { "name": "The No-Sharp-Corner Rule", "body": "Nothing in this system ships with a border-radius under 3px. A square-cornered card or button is the old identity leaking back in.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do use Ocean Azure for every actionable element and nothing else.",
+      "Do keep every corner radius at 12px or above, or a true pill (999px) — no exceptions for small UI like tags or chips.",
+      "Do tint shadows with Deep Tide navy, never pure black.",
+      "Do reserve uppercase type for kickers under ~20 characters.",
+      "Do keep Pierce/Thomas family colors reserved for identity, never reused for a generic action button."
+    ],
+    "donts": [
+      "Don't reintroduce sharp corners, accent top-rails on cards, or uppercase-tracked headline type.",
+      "Don't set body or button text in JetBrains Mono; monospace is fully retired from this system.",
+      "Don't use warm cream/beige neutrals — this system's neutrals are cool and blue-tinted.",
+      "Don't let a family color double as a button or link color."
+    ]
+  }
+}

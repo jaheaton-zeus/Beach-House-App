@@ -31,12 +31,11 @@ export function CheckoutView({ theme, items, lowItems }: { theme: ThemeColors; i
         <div
           style={{
             fontFamily: FONT_DISPLAY,
-            fontWeight: 700,
-            textTransform: "uppercase",
+            fontWeight: 800,
             fontSize: 28,
             color: theme.text,
             marginBottom: 10,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
           }}
         >
           All set!
@@ -65,7 +64,7 @@ export function CheckoutView({ theme, items, lowItems }: { theme: ThemeColors; i
       />
 
       <div style={{ height: 3, background: theme.border, margin: "0 20px", borderRadius: 99, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${progress}%`, background: theme.accent, transition: "width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)", borderRadius: 99 }} />
+        <div style={{ height: "100%", width: "100%", transformOrigin: "left", transform: `scaleX(${progress / 100})`, background: theme.accent, transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)", borderRadius: 99 }} />
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", paddingBottom: 60 }}>
@@ -74,11 +73,10 @@ export function CheckoutView({ theme, items, lowItems }: { theme: ThemeColors; i
             <div
               style={{
                 fontFamily: FONT_DISPLAY,
-                fontWeight: 700,
-                textTransform: "uppercase",
+                fontWeight: 800,
                 fontSize: 24,
                 color: theme.text,
-                letterSpacing: "-0.01em",
+                letterSpacing: "-0.015em",
                 lineHeight: 1.1,
                 marginBottom: 6,
               }}

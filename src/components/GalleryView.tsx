@@ -91,7 +91,7 @@ export function GalleryView({ theme, photos }: { theme: ThemeColors; photos: Gal
                   display: "inline-block",
                   position: "relative",
                   breakInside: "avoid",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                  boxShadow: "0 1px 4px rgba(14,42,77,0.08)",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -103,7 +103,7 @@ export function GalleryView({ theme, photos }: { theme: ThemeColors; photos: Gal
                     right: 0,
                     bottom: 0,
                     padding: "20px 10px 8px",
-                    background: "linear-gradient(180deg, rgba(31,27,22,0) 0%, rgba(31,27,22,0.7) 100%)",
+                    background: "linear-gradient(180deg, rgba(9,26,48,0) 0%, rgba(9,26,48,0.7) 100%)",
                     color: "#fff",
                     fontSize: 11,
                     fontWeight: 500,
@@ -127,7 +127,7 @@ export function GalleryView({ theme, photos }: { theme: ThemeColors; photos: Gal
             position: "absolute",
             inset: 0,
             zIndex: 200,
-            background: "rgba(15,13,10,0.96)",
+            background: "rgba(5,14,26,0.96)",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",

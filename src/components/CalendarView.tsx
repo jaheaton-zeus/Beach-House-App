@@ -105,11 +105,10 @@ export function CalendarView({
             <div
               style={{
                 fontFamily: FONT_DISPLAY,
-                fontWeight: 700,
-                textTransform: "uppercase",
+                fontWeight: 800,
                 fontSize: 34,
                 color: theme.text,
-                letterSpacing: "-0.015em",
+                letterSpacing: "-0.02em",
               }}
             >
               {MONTHS[viewMonth]} <span style={{ color: theme.textMuted }}>{viewYear}</span>
@@ -364,7 +363,7 @@ export function CalendarView({
               { dot: theme.accent, ring: theme.accent, label: "Selected" },
             ].map((l) => (
               <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <div style={{ width: 10, height: 10, borderRadius: 3, background: l.dot, border: `1px solid ${l.ring}` }} />
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: l.dot, border: `1px solid ${l.ring}` }} />
                 <span style={{ fontSize: 11, color: theme.textMuted }}>{l.label}</span>
               </div>
             ))}
@@ -404,7 +403,7 @@ export function CalendarView({
             variant="accent"
             size="lg"
             full
-            style={{ boxShadow: "0 12px 30px rgba(201,100,66,0.3)" }}
+            style={{ boxShadow: "0 12px 30px rgba(29,99,224,0.3)" }}
           >
             Continue with {fmtRange(selected.start, selected.end)}
           </Btn>

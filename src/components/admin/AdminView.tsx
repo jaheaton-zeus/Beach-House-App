@@ -67,7 +67,7 @@ export function AdminView({
               borderRadius: 8,
               background: tab === t.id ? theme.surface : "transparent",
               color: tab === t.id ? theme.text : theme.textMuted,
-              boxShadow: tab === t.id ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+              boxShadow: tab === t.id ? "0 1px 3px rgba(14,42,77,0.12)" : "none",
               border: "none",
               fontSize: 13,
               fontWeight: 600,

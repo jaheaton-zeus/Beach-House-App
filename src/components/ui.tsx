@@ -96,11 +96,11 @@ export function Badge({
           color: s.color,
           "--pc": s.color,
           padding: "3px 10px",
-          borderRadius: 3,
+          borderRadius: 999,
           fontSize: 11,
           fontWeight: 700,
-          letterSpacing: "0.04em",
-          fontFamily: "'JetBrains Mono', 'DM Sans', monospace",
+          letterSpacing: "0.03em",
+          fontFamily: FONT_SANS,
           textTransform: "uppercase",
         } as CSSProperties
       }
@@ -110,7 +110,7 @@ export function Badge({
   );
 }
 
-// ── Card — telemetry panel: sharp corners, accent top rail ────
+// ── Card — soft coastal panel: rounded corners, gentle shadow ─
 export function Card({
   children,
   style = {},
@@ -139,12 +139,11 @@ export function Card({
         {
           background: theme.surface,
           border: `1px solid ${theme.border}`,
-          borderTop: `3px solid ${theme.accent}`,
-          borderRadius: 4,
+          borderRadius: 16,
           padding: "18px 20px",
           cursor: onClick ? "pointer" : "default",
-          transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
-          boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
+          transition: "transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s",
+          boxShadow: "0 1px 1px rgba(14,42,77,0.03), 0 4px 16px rgba(14,42,77,0.06)",
           transform: press ? "scale(0.985)" : "scale(1)",
           "--tile-accent": theme.accent,
           "--tile-accent-deep": theme.accentDeep,
@@ -184,11 +183,10 @@ export function CardLink({
           color: "inherit",
           background: theme.surface,
           border: `1px solid ${theme.border}`,
-          borderTop: `3px solid ${theme.accent}`,
-          borderRadius: 4,
+          borderRadius: 16,
           padding: "18px 20px",
-          boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.05)",
-          transition: "transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s",
+          boxShadow: "0 1px 1px rgba(14,42,77,0.03), 0 4px 16px rgba(14,42,77,0.06)",
+          transition: "transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s",
           "--tile-accent": theme.accent,
           "--tile-accent-deep": theme.accentDeep,
           ...style,
@@ -225,12 +223,11 @@ export function Btn({
   const [press, setPress] = useState(false);
   const base: CSSProperties = {
     border: "none",
-    borderRadius: 6,
+    borderRadius: 999,
     cursor: disabled ? "not-allowed" : "pointer",
-    fontFamily: "'Titillium Web', sans-serif",
+    fontFamily: FONT_DISPLAY,
     fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.03em",
+    letterSpacing: "-0.005em",
     transition: "transform 0.1s, opacity 0.15s, background 0.15s",
     display: "inline-flex",
     alignItems: "center",
@@ -399,9 +396,8 @@ export function TopBar({
             fontSize: 16,
             fontWeight: 700,
             color: theme.text,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-            fontFamily: "'Titillium Web', sans-serif",
+            letterSpacing: "-0.005em",
+            fontFamily: FONT_DISPLAY,
           }}
         >
           {title}
@@ -448,8 +444,9 @@ export function SectionLabel({
           color: theme.text,
           letterSpacing: "0.06em",
           textTransform: "uppercase",
-          fontFamily: "'Titillium Web', sans-serif",
+          fontFamily: FONT_DISPLAY,
           borderLeft: `3px solid ${theme.accent}`,
+          borderRadius: 2,
           paddingLeft: 8,
         }}
       >

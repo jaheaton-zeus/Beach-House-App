@@ -102,12 +102,11 @@ export function BookForm({
         <div
           style={{
             fontFamily: FONT_DISPLAY,
-            fontWeight: 700,
-            textTransform: "uppercase",
+            fontWeight: 800,
             fontSize: 28,
             color: theme.text,
             marginBottom: 10,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
           }}
         >
           Request sent
@@ -168,9 +167,11 @@ export function BookForm({
         <div
           style={{
             height: "100%",
-            width: `${step * 50}%`,
+            width: "100%",
+            transformOrigin: "left",
+            transform: `scaleX(${step / 2})`,
             background: theme.accent,
-            transition: "width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            transition: "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
           }}
         />
       </div>
@@ -201,8 +202,7 @@ export function BookForm({
                       <div
                         style={{
                           fontFamily: FONT_DISPLAY,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
+                          fontWeight: 800,
                           fontSize: 22,
                           color: theme.accentDeep,
                           lineHeight: 1.1,

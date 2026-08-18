@@ -88,7 +88,7 @@ export function PhotosAdmin({ theme, photos }: { theme: ThemeColors; photos: Gal
     <Screen>
       <div style={{ padding: "12px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
         {toast && (
-          <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+          <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(14,42,77,0.25)" }}>
             {toast}
           </div>
         )}
@@ -171,7 +171,7 @@ export function PhotosAdmin({ theme, photos }: { theme: ThemeColors; photos: Gal
                         right: 0,
                         bottom: 0,
                         padding: "16px 8px 6px",
-                        background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)",
+                        background: "linear-gradient(180deg, rgba(9,26,48,0) 0%, rgba(9,26,48,0.7) 100%)",
                         color: "#fff",
                         fontSize: 11,
                         fontWeight: 500,
@@ -182,7 +182,7 @@ export function PhotosAdmin({ theme, photos }: { theme: ThemeColors; photos: Gal
                     <button
                       onClick={() => remove(p.id)}
                       disabled={isPending}
-                      style={{ position: "absolute", top: 6, right: 6, width: 24, height: 24, borderRadius: "50%", background: "rgba(0,0,0,0.55)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      style={{ position: "absolute", top: 6, right: 6, width: 24, height: 24, borderRadius: "50%", background: "rgba(9,26,48,0.55)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       {Icons.close("#fff")}
                     </button>

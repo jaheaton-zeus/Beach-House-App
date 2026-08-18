@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ThemeColors } from "@/lib/theme";
+import { FONT_DISPLAY, FONT_SANS } from "./ui";
 
 type WeatherIconName = "sun" | "cloud" | "rain";
 
@@ -151,7 +152,7 @@ export function WeatherWidget({ theme }: { theme: ThemeColors }) {
           alignItems: "center",
           justifyContent: "space-between",
           background: theme.text,
-          borderRadius: 4,
+          borderRadius: 16,
           padding: "14px 18px",
           minHeight: 58,
         }}
@@ -167,7 +168,7 @@ export function WeatherWidget({ theme }: { theme: ThemeColors }) {
               <div>
                 <div
                   style={{
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: FONT_DISPLAY,
                     fontWeight: 700,
                     fontSize: 26,
                     color: "#fff",
@@ -205,7 +206,7 @@ export function WeatherWidget({ theme }: { theme: ThemeColors }) {
                     {w.name}
                   </div>
                   <WeatherIcon icon={w.icon} />
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#fff" }}>
+                  <div style={{ fontFamily: FONT_SANS, fontWeight: 600, fontSize: 11, color: "#fff" }}>
                     {w.hi}°<span style={{ color: "rgba(255,255,255,0.45)" }}>{w.lo != null ? `/${w.lo}°` : ""}</span>
                   </div>
                 </div>

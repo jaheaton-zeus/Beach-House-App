@@ -63,7 +63,7 @@ export function ReservationsAdmin({
               borderRadius: 8,
               background: filter === f.id ? f.color : "transparent",
               color: filter === f.id ? "#fff" : theme.textMuted,
-              boxShadow: filter === f.id ? "0 1px 3px rgba(0,0,0,0.15)" : "none",
+              boxShadow: filter === f.id ? "0 1px 3px rgba(14,42,77,0.18)" : "none",
               border: "none",
               fontSize: 12,
               fontWeight: 600,
@@ -83,7 +83,7 @@ export function ReservationsAdmin({
       </div>
 
       {toast && (
-        <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+        <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(14,42,77,0.25)" }}>
           {toast}
         </div>
       )}
