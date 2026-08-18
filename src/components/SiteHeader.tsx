@@ -82,24 +82,14 @@ export function SiteHeader({
           href="/home"
           style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}
         >
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 10,
-              background: theme.accent,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontWeight: 800,
-              fontSize: 15,
-              flexShrink: 0,
-            }}
-          >
-            S
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-mark.svg"
+            alt="Shelter Cove"
+            width={30}
+            height={30}
+            style={{ flexShrink: 0, display: "block" }}
+          />
           <span
             style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
