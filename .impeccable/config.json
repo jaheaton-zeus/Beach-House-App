@@ -48,6 +48,15 @@
         ],
         "createdAt": "2026-08-18T14:23:02.752Z",
         "reason": "pre-existing .rec-tag hover-state rule, unrelated to and untouched by this redesign pass"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "32px",
+        "files": [
+          "src/components/BookForm.tsx"
+        ],
+        "createdAt": "2026-08-18T17:53:53.635Z",
+        "reason": "min-bound of a responsive clamp() for the new full-bleed Book hero headline, the one intentionally oversized moment in the app per the user's reference design"
       }
     ]
   }
