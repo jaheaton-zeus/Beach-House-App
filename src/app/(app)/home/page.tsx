@@ -75,7 +75,7 @@ export default async function HomePage() {
                 gap: 8,
                 rowGap: 6,
                 padding: "10px 18px",
-                borderRadius: 4,
+                borderRadius: 14,
                 background: FAMILY_COLORS[currentSlot.family].soft,
                 border: `0.5px solid ${FAMILY_COLORS[currentSlot.family].primary}33`,
               }}
@@ -92,7 +92,7 @@ export default async function HomePage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontFamily: "'Titillium Web', sans-serif",
+                    fontFamily: FONT_DISPLAY,
                     fontWeight: 700,
                     fontSize: 15,
                   }}
@@ -112,9 +112,8 @@ export default async function HomePage() {
                 </div>
                 <div
                   style={{
-                    fontFamily: "'Titillium Web', sans-serif",
+                    fontFamily: FONT_DISPLAY,
                     fontWeight: 700,
-                    textTransform: "uppercase",
                     fontSize: 15,
                     color: FAMILY_COLORS[currentSlot.family].deep,
                   }}
@@ -193,11 +192,10 @@ export default async function HomePage() {
                   <div
                     style={{
                       fontFamily: FONT_DISPLAY,
-                      fontWeight: 700,
-                      textTransform: "uppercase",
+                      fontWeight: 800,
                       fontSize: 32,
                       color: theme.text,
-                      letterSpacing: "-0.015em",
+                      letterSpacing: "-0.02em",
                       lineHeight: 1.1,
                     }}
                   >
@@ -217,10 +215,9 @@ export default async function HomePage() {
                       <div
                         style={{
                           fontFamily: FONT_DISPLAY,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
+                          fontWeight: 800,
                           fontSize: 22,
-                          letterSpacing: "-0.01em",
+                          letterSpacing: "-0.015em",
                           lineHeight: 1.1,
                         }}
                       >
@@ -253,7 +250,7 @@ export default async function HomePage() {
                   backgroundPosition: "center",
                   backgroundColor: theme.surfaceAlt,
                   aspectRatio: "16/10",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                  boxShadow: "0 8px 24px rgba(14,42,77,0.16)",
                   padding: 0,
                   border: "none",
                 }}
@@ -262,7 +259,7 @@ export default async function HomePage() {
                   style={{
                     position: "absolute",
                     inset: 0,
-                    background: "linear-gradient(180deg, rgba(31,27,22,0) 40%, rgba(31,27,22,0.85) 100%)",
+                    background: "linear-gradient(180deg, rgba(9,26,48,0) 40%, rgba(9,26,48,0.85) 100%)",
                   }}
                 />
                 <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 20px 18px", color: "#fff" }}>
@@ -281,9 +278,8 @@ export default async function HomePage() {
                   <div
                     style={{
                       fontFamily: FONT_DISPLAY,
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      fontSize: 24,
+                      fontWeight: 800,
+                      fontSize: 26,
                       lineHeight: 1.1,
                       marginBottom: 4,
                     }}
@@ -319,7 +315,7 @@ export default async function HomePage() {
                       overflow: "hidden",
                       position: "relative",
                       background: theme.surfaceAlt,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                      boxShadow: "0 2px 8px rgba(14,42,77,0.1)",
                       display: "block",
                     }}
                   >
@@ -337,7 +333,7 @@ export default async function HomePage() {
                         right: 0,
                         bottom: 0,
                         padding: "18px 10px 8px",
-                        background: "linear-gradient(180deg, rgba(31,27,22,0) 0%, rgba(31,27,22,0.72) 100%)",
+                        background: "linear-gradient(180deg, rgba(9,26,48,0) 0%, rgba(9,26,48,0.72) 100%)",
                         color: "#fff",
                         fontSize: 11,
                         fontWeight: 500,

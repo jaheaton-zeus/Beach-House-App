@@ -82,31 +82,20 @@ export function SiteHeader({
           href="/home"
           style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}
         >
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 4,
-              background: theme.accent,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              fontFamily: "'Titillium Web', sans-serif",
-              fontWeight: 900,
-              fontSize: 15,
-              flexShrink: 0,
-            }}
-          >
-            S
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-mark.svg"
+            alt="Shelter Cove"
+            width={30}
+            height={30}
+            style={{ flexShrink: 0, display: "block" }}
+          />
           <span
             style={{
-              fontFamily: "'Titillium Web', sans-serif",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.03em",
-              fontSize: 16,
+              letterSpacing: "-0.01em",
+              fontSize: 17,
               color: theme.text,
               whiteSpace: "nowrap",
             }}
@@ -125,13 +114,13 @@ export function SiteHeader({
               <span
                 style={{
                   fontSize: 9,
-                  padding: "2px 7px",
+                  padding: "2px 8px",
                   background: theme.text,
                   color: "#fff",
-                  borderRadius: 3,
+                  borderRadius: 999,
                   fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  fontFamily: "'JetBrains Mono', monospace",
+                  letterSpacing: "0.04em",
+                  fontFamily: FONT_SANS,
                 }}
               >
                 ADMIN
@@ -201,11 +190,10 @@ export function SiteHeader({
                 background: "transparent",
                 position: "relative",
                 color: isActive(it.href) ? "#fff" : "rgba(255,255,255,0.6)",
-                fontSize: 12,
-                fontWeight: 700,
-                fontFamily: "'Titillium Web', sans-serif",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
+                fontSize: 13,
+                fontWeight: 600,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                letterSpacing: "-0.005em",
                 textDecoration: "none",
               }}
             >
@@ -214,12 +202,12 @@ export function SiteHeader({
                 <span
                   style={{
                     position: "absolute",
-                    left: 10,
-                    right: 10,
+                    left: 16,
+                    right: 16,
                     bottom: 0,
                     height: 3,
+                    borderRadius: "3px 3px 0 0",
                     background: theme.accent,
-                    clipPath: "polygon(6% 0,100% 0,94% 100%,0 100%)",
                   }}
                 />
               )}
@@ -236,7 +224,7 @@ export function SiteHeader({
               background: theme.accent,
               border: "none",
               padding: "5px 12px",
-              borderRadius: 4,
+              borderRadius: 999,
               margin: "8px 0",
               textDecoration: "none",
             }}
@@ -252,7 +240,7 @@ export function SiteHeader({
             >
               Next Stay
             </span>
-            <span style={{ fontSize: 12, color: "#fff", fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ fontSize: 12, color: "#fff", fontWeight: 700, fontFamily: FONT_SANS }}>
               {fmtRange(nextStay.check_in, nextStay.check_out)}
             </span>
             <Badge status={nextStay.status} theme={theme} />

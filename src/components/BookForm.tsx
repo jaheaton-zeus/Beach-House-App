@@ -6,7 +6,7 @@ import type { ThemeColors } from "@/lib/theme";
 import { nightsBetween, fmtRange } from "@/lib/format";
 import { Icons } from "@/lib/icons";
 import { createReservation } from "@/app/actions";
-import { Avatar, Btn, Card, IconBtn, Input, Screen, SectionLabel, Textarea, TopBar, FONT_DISPLAY, FONT_SANS } from "@/components/ui";
+import { Avatar, Btn, Card, IconBtn, Screen, SectionLabel, Textarea, TopBar, FONT_DISPLAY, FONT_SANS } from "@/components/ui";
 
 export function BookForm({
   theme,
@@ -102,12 +102,11 @@ export function BookForm({
         <div
           style={{
             fontFamily: FONT_DISPLAY,
-            fontWeight: 700,
-            textTransform: "uppercase",
+            fontWeight: 800,
             fontSize: 28,
             color: theme.text,
             marginBottom: 10,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
           }}
         >
           Request sent
@@ -138,29 +137,193 @@ export function BookForm({
     );
   }
 
+  if (step === 1) {
+    const canContinue = !!checkIn && !!checkOut && nights >= 1;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", height: "100%", background: theme.bg }}>
+        <div
+          style={{
+            position: "relative",
+            minHeight: "min(640px, 80vh)",
+            display: "flex",
+            flexDirection: "column",
+            backgroundImage: "url('/book-hero.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(9,26,48,0.4) 0%, rgba(9,26,48,0.25) 45%, rgba(9,26,48,0.8) 100%)",
+            }}
+          />
+
+          <div style={{ position: "relative", zIndex: 1, padding: "20px 20px 0" }}>
+            <button
+              onClick={() => router.push("/home")}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.18)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {Icons.close("#fff")}
+            </button>
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "0 24px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                color: "rgba(255,255,255,0.75)",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                marginBottom: 10,
+              }}
+            >
+              Step 1 of 2
+            </div>
+            <div
+              style={{
+                fontFamily: FONT_DISPLAY,
+                fontWeight: 800,
+                fontSize: "clamp(32px, 7vw, 52px)",
+                color: "#fff",
+                lineHeight: 1.05,
+                letterSpacing: "-0.02em",
+                marginBottom: 14,
+              }}
+            >
+              Plan Your Stay
+            </div>
+            <div style={{ fontSize: 15, color: "rgba(255,255,255,0.85)", maxWidth: 380 }}>
+              Pick your dates and we&apos;ll let the family know.
+            </div>
+          </div>
+
+          <div style={{ position: "relative", zIndex: 1, padding: "0 20px 32px" }}>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 24,
+                padding: "8px 8px 8px 22px",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                boxShadow: "0 20px 50px rgba(9,26,48,0.35)",
+                maxWidth: 480,
+                margin: "0 auto",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 0, padding: "6px 0" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: theme.textMuted, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 2 }}>
+                  Check-in
+                </div>
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: theme.text,
+                    fontFamily: FONT_SANS,
+                    background: "transparent",
+                    width: "100%",
+                    padding: 0,
+                  }}
+                />
+              </div>
+              <div style={{ width: 1, height: 32, background: theme.border, flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0, padding: "6px 0 6px 14px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: theme.textMuted, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 2 }}>
+                  Check-out
+                </div>
+                <input
+                  type="date"
+                  value={checkOut}
+                  onChange={(e) => setCheckOut(e.target.value)}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: theme.text,
+                    fontFamily: FONT_SANS,
+                    background: "transparent",
+                    width: "100%",
+                    padding: 0,
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => canContinue && setStep(2)}
+                disabled={!canContinue}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: "50%",
+                  background: canContinue ? theme.accent : theme.textSubtle,
+                  border: "none",
+                  cursor: canContinue ? "pointer" : "default",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  transition: "background 0.15s",
+                }}
+              >
+                <span style={{ display: "flex", transform: "rotate(180deg)" }}>{Icons.back("#fff")}</span>
+              </button>
+            </div>
+
+            {nights > 0 && (
+              <div style={{ textAlign: "center", marginTop: 14, fontSize: 13, color: "#fff", fontWeight: 600 }}>
+                {nights} night{nights > 1 ? "s" : ""} · {fmtRange(checkIn, checkOut)}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: theme.bg }}>
       <TopBar
-        title={step === 1 ? "When?" : "Who?"}
-        subtitle={`Step ${step} of 2`}
+        title="Who?"
+        subtitle="Step 2 of 2"
         theme={theme}
         left={
-          step > 1 ? (
-            <IconBtn theme={theme} onClick={() => setStep(1)}>
-              {Icons.back(theme.text)}
-            </IconBtn>
-          ) : (
-            <IconBtn theme={theme} onClick={() => router.push("/home")}>
-              {Icons.close(theme.text)}
-            </IconBtn>
-          )
-        }
-        right={
-          step === 1 ? (
-            <IconBtn theme={theme} onClick={() => router.push("/home")}>
-              {Icons.close(theme.text)}
-            </IconBtn>
-          ) : undefined
+          <IconBtn theme={theme} onClick={() => setStep(1)}>
+            {Icons.back(theme.text)}
+          </IconBtn>
         }
       />
 
@@ -168,66 +331,18 @@ export function BookForm({
         <div
           style={{
             height: "100%",
-            width: `${step * 50}%`,
+            width: "100%",
+            transformOrigin: "left",
+            transform: "scaleX(1)",
             background: theme.accent,
-            transition: "width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         />
       </div>
 
       <Screen>
         <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 18, maxWidth: 520 }}>
-          {step === 1 && (
-            <>
-              <Input label="Check-in" type="date" value={checkIn} onChange={setCheckIn} theme={theme} />
-              <Input label="Check-out" type="date" value={checkOut} onChange={setCheckOut} theme={theme} />
-
-              {nights > 0 && (
-                <Card theme={theme} style={{ background: theme.accentSoft, border: "none" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: theme.accent,
-                          fontWeight: 600,
-                          letterSpacing: "0.02em",
-                          textTransform: "uppercase",
-                          marginBottom: 4,
-                        }}
-                      >
-                        Your stay
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: FONT_DISPLAY,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          fontSize: 22,
-                          color: theme.accentDeep,
-                          lineHeight: 1.1,
-                        }}
-                      >
-                        {nights} night{nights > 1 ? "s" : ""}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: 13, color: theme.accentDeep, opacity: 0.7, textAlign: "right" }}>
-                      {fmtRange(checkIn, checkOut)}
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              <Btn onClick={() => setStep(2)} disabled={!checkIn || !checkOut || nights < 1} theme={theme} variant="primary" size="lg" full>
-                Continue
-              </Btn>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <div>
-                <SectionLabel theme={theme}>
+          <div>
+            <SectionLabel theme={theme}>
                   Guests · {guests.length}/{maxGuests}
                 </SectionLabel>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -319,11 +434,9 @@ export function BookForm({
 
               {error && <div style={{ fontSize: 13, color: theme.accentDeep }}>{error}</div>}
 
-              <Btn onClick={submit} disabled={isPending} theme={theme} variant="accent" size="lg" full>
-                {isPending ? "Sending…" : "Request stay"}
-              </Btn>
-            </>
-          )}
+          <Btn onClick={submit} disabled={isPending} theme={theme} variant="accent" size="lg" full>
+            {isPending ? "Sending…" : "Request stay"}
+          </Btn>
         </div>
       </Screen>
     </div>

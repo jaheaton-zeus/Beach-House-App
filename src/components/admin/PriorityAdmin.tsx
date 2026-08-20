@@ -32,7 +32,7 @@ export function PriorityAdmin({ theme, periods }: { theme: ThemeColors; periods:
     <Screen>
       <div style={{ padding: "12px 20px 0", display: "flex", flexDirection: "column", gap: 10 }}>
         {toast && (
-          <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+          <div style={{ position: "absolute", top: 70, left: "50%", transform: "translateX(-50%)", background: theme.text, color: "#fff", padding: "10px 18px", borderRadius: 99, fontSize: 13, fontWeight: 500, zIndex: 100, boxShadow: "0 8px 24px rgba(14,42,77,0.25)" }}>
             {toast}
           </div>
         )}

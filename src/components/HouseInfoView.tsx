@@ -56,7 +56,7 @@ export function HouseInfoView({
                 fontSize: 13,
                 fontWeight: 500,
                 background: tab === t.id ? theme.surface : "transparent",
-                boxShadow: tab === t.id ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
+                boxShadow: tab === t.id ? "0 1px 3px rgba(14,42,77,0.1)" : "none",
                 border: "none",
                 borderRadius: 9,
                 cursor: "pointer",
@@ -103,8 +103,7 @@ function LightsTab({ theme }: { theme: ThemeColors }) {
       <div
         style={{
           fontFamily: FONT_DISPLAY,
-          fontWeight: 700,
-          textTransform: "uppercase",
+          fontWeight: 800,
           fontSize: 18,
           color: theme.text,
           marginBottom: 6,
@@ -162,8 +161,7 @@ function InfoTab({ info, theme }: { info: HouseInfoRow; theme: ThemeColors }) {
             <div
               style={{
                 fontFamily: FONT_DISPLAY,
-                fontWeight: 700,
-                textTransform: "uppercase",
+                fontWeight: 800,
                 fontSize: 22,
                 color: theme.text,
                 lineHeight: 1,
@@ -258,11 +256,10 @@ function RulesTab({ theme, rules }: { theme: ThemeColors; rules: HouseRuleRow[] 
         <div
           style={{
             fontFamily: FONT_DISPLAY,
-            fontWeight: 700,
-            textTransform: "uppercase",
+            fontWeight: 800,
             fontSize: 22,
             color: theme.text,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
             marginBottom: 4,
             lineHeight: 1.1,
           }}
@@ -330,11 +327,10 @@ function RecsTab({
         <div
           style={{
             fontFamily: FONT_DISPLAY,
-            fontWeight: 700,
-            textTransform: "uppercase",
+            fontWeight: 800,
             fontSize: 22,
             color: theme.text,
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.015em",
             marginBottom: 4,
             lineHeight: 1.1,
           }}
@@ -410,8 +406,7 @@ function BikeMap({ theme }: { theme: ThemeColors }) {
           <span
             style={{
               fontFamily: FONT_DISPLAY,
-              fontWeight: 700,
-              textTransform: "uppercase",
+              fontWeight: 800,
               fontSize: 18,
               color: theme.text,
               lineHeight: 1.1,
