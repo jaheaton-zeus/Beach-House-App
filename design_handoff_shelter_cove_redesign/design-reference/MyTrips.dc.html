@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:'Manrope',system-ui,sans-serif;background:#0c1316;color:#fff;-webkit-font-smoothing:antialiased}
+  a{color:#7fb6a6;text-decoration:none}
+  a:hover{color:#a7d0c4}
+</style>
+</helmet>
+
+<div style="width:100%;max-width:1440px;margin:0 auto;background:#0c1316;min-height:100vh;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:1180px;max-width:100%;z-index:0">
+    <div style="position:absolute;inset:0;background:radial-gradient(120% 70% at 50% -10%,rgba(111,167,147,0.16) 0%,rgba(12,19,22,0) 55%)"></div>
+  </div>
+  <div style="position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 48px">
+
+    <dc-import name="Header" active="mytrips" hint-size="100%,90px"></dc-import>
+
+    <div style="padding:44px 0 22px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="width:34px;height:1px;background:#8fc7b6"></span>
+        <span style="font-size:12px;letter-spacing:3px;font-weight:600;color:#a7d0c4">YOUR STAYS</span>
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <h1 style="font-family:'Manrope',system-ui,sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-1.5px;margin:0">My Trips</h1>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12.5px;color:rgba(255,255,255,0.5)">Viewing as</span>
+          <select value="{{ viewerCode }}" onChange="{{ setViewer }}" style="color-scheme:dark;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:22px;padding:9px 16px;font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:600;color:#fff;outline:none;cursor:pointer">
+            <sc-for list="{{ people }}" as="p" hint-placeholder-count="4">
+              <option value="{{ p.code }}">{{ p.name }}</option>
+            </sc-for>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;gap:34px;padding-bottom:80px">
+      <sc-for list="{{ groups }}" as="group" hint-placeholder-count="3">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <span style="width:8px;height:8px;border-radius:2px;background:#8fc7b6;transform:rotate(45deg)"></span>
+            <span style="font-size:17px;font-weight:800;letter-spacing:-0.3px">{{ group.title }}</span>
+            <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.4)">· {{ group.count }}</span>
+          </div>
+
+          <sc-if value="{{ group.isEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="background:rgba(12,19,22,0.6);border:1px dashed rgba(255,255,255,0.14);border-radius:14px;padding:26px;font-size:14px;color:rgba(255,255,255,0.5)">{{ group.emptyText }}</div>
+          </sc-if>
+
+          <div style="display:grid;gap:12px">
+            <sc-for list="{{ group.items }}" as="trip" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:20px;background:rgba(12,19,22,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 24px">
+                <div style="flex-shrink:0;width:52px;height:52px;border-radius:13px;background:rgba(111,167,147,0.14);border:1px solid rgba(111,167,147,0.28);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1">
+                  <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:#a7d0c4">{{ trip.mon }}</span>
+                  <span style="font-size:20px;font-weight:800;color:#fff">{{ trip.day }}</span>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:16.5px;font-weight:700">{{ trip.dates }}</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:3px">{{ trip.nightsLabel }} · {{ trip.family }} family</div>
+                  <sc-if value="{{ trip.isPending }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12px;color:#e8c877;margin-top:8px">{{ trip.voteLabel }}</div>
+                  </sc-if>
+                </div>
+                <span style="{{ trip.statusStyle }}">{{ trip.statusLabel }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 900 } }">
+class Component extends DCLogic {
+  state = { code: null, reservations: [], users: [] };
+  async componentDidMount() {
+    this.resStore = await import('./reservation-store.js');
+    this.userStore = await import('./user-store.js');
+    this.reload();
+    this._onSync = () => this.reload();
+    window.addEventListener('storage', this._onSync);
+    window.addEventListener('focus', this._onSync);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('storage', this._onSync);
+    window.removeEventListener('focus', this._onSync);
+  }
+  reload() {
+    const users = this.userStore.getAll();
+    let code = this.state.code || this.userStore.getCurrentUserCode();
+    if (!code) { const me = this.userStore.getCurrentUser(); code = me ? me.code : (users[0] && users[0].code); }
+    this.setState({ users, reservations: this.resStore.getAll(), code });
+  }
+  setViewer(e) {
+    const code = e.target.value;
+    this.userStore.setCurrentUserCode(code);
+    this.setState({ code });
+  }
+  statusStyle(status) {
+    const m = {
+      approved: 'rgba(111,167,147,0.16);border:1px solid rgba(111,167,147,0.3);color:#a7d0c4',
+      pending: 'rgba(230,190,90,0.16);border:1px solid rgba(230,190,90,0.32);color:#e8c877',
+      denied: 'rgba(210,90,70,0.16);border:1px solid rgba(210,90,70,0.34);color:#e39b8c',
+    };
+    return `font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:7px 15px;border-radius:20px;white-space:nowrap;background:${m[status] || m.pending}`;
+  }
+  renderVals() {
+    const rs = this.resStore, us = this.userStore;
+    const users = this.state.users;
+    const people = users.map(u => ({ code: u.code, name: u.name }));
+    const viewerCode = this.state.code || (people[0] && people[0].code) || '';
+    const superIds = users.filter(u => u.superUser).map(u => u.id);
+    const MO = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    const mine = this.state.reservations.filter(r => (r.code || '').toLowerCase() === (viewerCode || '').toLowerCase());
+    const decorate = r => {
+      const ci = new Date(r.checkIn + 'T00:00');
+      const info = rs ? rs.voteInfo(r, superIds) : { approvals: 0, needed: 1, superCount: 0 };
+      return {
+        ...r,
+        mon: MO[ci.getMonth()],
+        day: ci.getDate(),
+        dates: rs ? rs.formatRange(r.checkIn, r.checkOut) : '',
+        nightsLabel: rs ? `${rs.nights(r.checkIn, r.checkOut)} nights` : '',
+        isPending: r.status === 'pending',
+        voteLabel: `Awaiting review · ${info.approvals} of ${info.needed} approvals so far`,
+        statusStyle: this.statusStyle(r.status),
+        statusLabel: r.status,
+        _ci: ci,
+      };
+    };
+    const byDate = (a, b) => a._ci - b._ci;
+    const pending = mine.filter(r => r.status === 'pending').map(decorate).sort(byDate);
+    const upcoming = mine.filter(r => r.status === 'approved' && new Date(r.checkOut + 'T00:00') >= today).map(decorate).sort(byDate);
+    const past = mine.filter(r => r.status === 'denied' || (r.status === 'approved' && new Date(r.checkOut + 'T00:00') < today)).map(decorate).sort((a, b) => b._ci - a._ci);
+
+    const mk = (title, items, emptyText) => ({ title, items, count: items.length, isEmpty: items.length === 0, emptyText });
+    const groups = [
+      mk('Pending review', pending, 'No requests waiting on the house admins.'),
+      mk('Upcoming', upcoming, 'No approved stays coming up. Book one from the home page.'),
+      mk('Past & declined', past, 'Nothing here yet.'),
+    ];
+    return { people, viewerCode, setViewer: e => this.setViewer(e), groups };
+  }
+}
+</script>
+</body>
+</html>

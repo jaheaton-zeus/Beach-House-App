@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  .om-hdr a{text-decoration:none}
+</style>
+</helmet>
+
+<header class="om-hdr" style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:30px 0 8px;border-bottom:1px solid rgba(255,255,255,0.08);font-family:'Manrope',system-ui,sans-serif">
+  <a href="Wanderlust.dc.html" style="display:flex;align-items:center;gap:12px;color:#fff">
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8fc7b6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c2-2 3.2-2 5 0s2.8 2 5 0 3.2-2 5 0 2.8 2 5 0"/><path d="M4 11c1.8-4 5-6 8.5-5.5C9 6.5 8 9 8.5 12"/><path d="M4 11c3-1.5 6-.5 7 2"/></svg>
+    <div style="line-height:1">
+      <div style="font-weight:800;font-size:19px;letter-spacing:1.5px">SHELTER COVE</div>
+    </div>
+  </a>
+
+  <nav style="display:flex;align-items:center;gap:34px;font-size:14.5px;font-weight:500;color:rgba(255,255,255,0.9)">
+    <a href="Calendar.dc.html" style="color:{{ colCal }};font-weight:{{ fwCal }}">Calendar</a>
+    <div onMouseEnter="{{ openHouseInfo }}" onMouseLeave="{{ closeHouseInfo }}" style="position:relative">
+      <a href="Rules.dc.html" style="display:flex;align-items:center;gap:5px;color:{{ colHouse }};font-weight:{{ fwHouse }}">House Info <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></a>
+      <sc-if value="{{ houseInfoOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:100%;left:0;padding-top:14px;z-index:30">
+          <div style="min-width:172px;background:rgba(14,22,25,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;box-shadow:0 18px 44px rgba(0,0,0,0.5)">
+            <a href="Rules.dc.html" style="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.9)" style-hover="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#0c1316;background:#6fa793">Rules</a>
+            <a href="Access.dc.html" style="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.9)" style-hover="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#0c1316;background:#6fa793">Access</a>
+            <a href="Activities.dc.html" style="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.9)" style-hover="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#0c1316;background:#6fa793">Around the House</a>
+            <a href="Lights.dc.html" style="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.9)" style-hover="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#0c1316;background:#6fa793">Lights</a>
+            <a href="Photos.dc.html" style="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.9)" style-hover="display:block;padding:10px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#0c1316;background:#6fa793">Photos</a>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    <a href="MyTrips.dc.html" style="color:{{ colTrips }};font-weight:{{ fwTrips }}">My Trips</a>
+    <a href="Pathways.dc.html" style="color:{{ colPath }};font-weight:{{ fwPath }}">Pathways</a>
+    <sc-if value="{{ isSuper }}" hint-placeholder-val="{{ false }}">
+      <a href="Admin.dc.html" style="color:{{ colAdmin }};font-weight:{{ fwAdmin }}">Admin</a>
+    </sc-if>
+  </nav>
+
+  <div style="display:flex;align-items:center;gap:18px">
+    <sc-if value="{{ wx }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);padding:8px 15px 8px 12px;border-radius:30px">
+        <span style="font-size:20px;line-height:1">{{ wxIcon }}</span>
+        <div style="line-height:1.15">
+          <div style="font-size:15px;font-weight:700;color:#fff">{{ wxTemp }}</div>
+          <div style="font-size:10.5px;letter-spacing:0.3px;color:rgba(255,255,255,0.6)">{{ wxDesc }}</div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1200, &quot;height&quot;: 96 }, &quot;active&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;&quot;, &quot;calendar&quot;, &quot;houseinfo&quot;, &quot;mytrips&quot;, &quot;pathways&quot;, &quot;admin&quot;], &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot; } }">
+class Component extends DCLogic {
+  state = { houseInfoOpen: false, wx: null, isSuper: false };
+  async componentDidMount() {
+    try {
+      const us = await import('./user-store.js');
+      const code = us.getCurrentUserCode();
+      const user = (code && us.findByCode(code)) || us.getCurrentUser();
+      this.setState({ isSuper: !!(user && user.superUser) });
+    } catch (e) { /* leave hidden */ }
+    try {
+      const pt = await fetch('https://api.weather.gov/points/32.1896,-80.7501', { headers: { Accept: 'application/geo+json' } }).then(r => r.json());
+      const fc = await fetch(pt.properties.forecastHourly, { headers: { Accept: 'application/geo+json' } }).then(r => r.json());
+      const p = fc.properties.periods[0];
+      this.setState({ wx: { temp: `${p.temperature}\u00b0${p.temperatureUnit}`, desc: p.shortForecast, forecast: p.shortForecast, day: p.isDaytime } });
+    } catch (e) { /* leave wx null — pill stays hidden */ }
+  }
+  iconFor(desc, day) {
+    const d = (desc || '').toLowerCase();
+    if (d.includes('thunder') || d.includes('storm')) return '\u26c8\ufe0f';
+    if (d.includes('snow') || d.includes('sleet') || d.includes('ice')) return '\u2744\ufe0f';
+    if (d.includes('rain') || d.includes('shower') || d.includes('drizzle')) return '\ud83c\udf27\ufe0f';
+    if (d.includes('fog') || d.includes('haze')) return '\ud83c\udf2b\ufe0f';
+    if (d.includes('cloud') || d.includes('overcast')) return d.includes('partly') ? (day ? '\u26c5' : '\u2601\ufe0f') : '\u2601\ufe0f';
+    return day ? '\u2600\ufe0f' : '\ud83c\udf19';
+  }
+  renderVals() {
+    const w = this.state.wx;
+    const active = this.props.active || '';
+    const on = '#ffffff', onW = '700', off = 'rgba(255,255,255,0.9)', offW = '500';
+    return {
+      houseInfoOpen: this.state.houseInfoOpen,
+      isSuper: this.state.isSuper,
+      openHouseInfo: () => this.setState({ houseInfoOpen: true }),
+      closeHouseInfo: () => this.setState({ houseInfoOpen: false }),
+      colCal: active === 'calendar' ? on : off, fwCal: active === 'calendar' ? onW : offW,
+      colHouse: active === 'houseinfo' ? on : off, fwHouse: active === 'houseinfo' ? onW : offW,
+      colTrips: active === 'mytrips' ? on : off, fwTrips: active === 'mytrips' ? onW : offW,
+      colPath: active === 'pathways' ? on : off, fwPath: active === 'pathways' ? onW : offW,
+      colAdmin: active === 'admin' ? on : off, fwAdmin: active === 'admin' ? onW : offW,
+      wx: !!w,
+      wxTemp: w ? w.temp : '',
+      wxDesc: w ? w.desc : '',
+      wxIcon: w ? this.iconFor(w.forecast, w.day) : '',
+    };
+  }
+}
+</script>
+</body>
+</html>

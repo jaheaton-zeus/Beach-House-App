@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="image-slot.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:'Manrope',system-ui,sans-serif;background:#0c1316;color:#fff;-webkit-font-smoothing:antialiased}
+  a{color:#7fb6a6;text-decoration:none}
+  a:hover{color:#a7d0c4}
+  .adm-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:11px 13px;font-family:'Manrope',sans-serif;font-size:14px;font-weight:600;color:#fff;outline:none}
+</style>
+</helmet>
+
+<div style="width:100%;max-width:1440px;margin:0 auto;background:#0c1316;min-height:100vh;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:1180px;max-width:100%;z-index:0">
+    <div style="position:absolute;inset:0;background:radial-gradient(120% 70% at 50% -10%,rgba(111,167,147,0.16) 0%,rgba(12,19,22,0) 55%)"></div>
+  </div>
+  <div style="position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 48px">
+
+    <dc-import name="Header" active="admin" hint-size="100%,90px"></dc-import>
+
+    <div style="padding:44px 0 24px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="width:34px;height:1px;background:#8fc7b6"></span>
+        <span style="font-size:12px;letter-spacing:3px;font-weight:600;color:#a7d0c4">MANAGE</span>
+      </div>
+      <h1 style="font-family:'Manrope',system-ui,sans-serif;font-weight:800;font-size:52px;line-height:1;letter-spacing:-1.5px;margin:0">Admin</h1>
+      <p style="font-size:15px;color:rgba(255,255,255,0.6);margin:14px 0 0;max-width:560px">Approve requests and keep the house info up to date.</p>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:8px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.08)">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="5">
+        <button onClick="{{ tab.onClick }}" style="{{ tab.style }}">{{ tab.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="padding:28px 0 80px">
+
+      <!-- RESERVATIONS -->
+      <sc-if value="{{ showReservations }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.4px">Booking Requests</span>
+            <span style="font-size:13px;font-weight:600;color:#e8c877">{{ pendingLabel }}</span>
+          </div>
+          <p style="font-size:13px;color:rgba(255,255,255,0.5);margin:0 0 18px">Super Users can approve or deny incoming requests.</p>
+          <div style="display:grid;gap:12px">
+            <sc-for list="{{ reservations }}" as="res" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:18px;background:rgba(12,19,22,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:18px 22px">
+                <div style="{{ res.avatarStyle }}">{{ res.initials }}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="font-size:16px;font-weight:700">{{ res.name }}</span>
+                    <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.45)">{{ res.family }} family</span>
+                  </div>
+                  <div style="font-size:13.5px;color:rgba(255,255,255,0.6);margin-top:3px">{{ res.dates }} · {{ res.nightsLabel }}</div>
+                </div>
+                <sc-if value="{{ res.isPending }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:7px">
+                    <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);white-space:nowrap">{{ res.voteLabel }}</div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <button onClick="{{ res.approve }}" style="{{ res.approveStyle }}">{{ res.approveLabel }}</button>
+                      <button onClick="{{ res.deny }}" style="{{ res.denyStyle }}">{{ res.denyLabel }}</button>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ res.isDecided }}" hint-placeholder-val="{{ false }}">
+                  <span style="{{ res.statusStyle }}">{{ res.statusLabel }}</span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- AROUND THE HOUSE -->
+      <sc-if value="{{ showPlaces }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <button onClick="{{ addPlace }}" style="width:100%;background:#0f4c5c;border:1px solid rgba(143,199,182,0.35);color:#eafff8;padding:16px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:26px">+ Add a place</button>
+          <div style="display:grid;gap:30px">
+            <sc-for list="{{ placeGroups }}" as="group" hint-placeholder-count="3">
+              <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                  <span style="width:8px;height:8px;border-radius:2px;background:#8fc7b6;transform:rotate(45deg)"></span>
+                  <span style="font-size:16px;font-weight:800">{{ group.cat }}</span>
+                  <span style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.4)">· {{ group.count }}</span>
+                </div>
+                <div style="display:grid;gap:10px">
+                  <sc-for list="{{ group.items }}" as="place" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:flex-start;gap:16px;background:rgba(12,19,22,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 18px">
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:15.5px;font-weight:700">{{ place.name }}</div>
+                        <div style="font-size:13.5px;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:3px">{{ place.desc }}</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:5px">{{ place.drive }}</div>
+                      </div>
+                      <button onClick="{{ place.remove }}" title="Remove" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1" style-hover="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(210,90,70,0.18);border:1px solid rgba(210,90,70,0.4);color:#e39b8c;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1">×</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- USERS -->
+      <sc-if value="{{ showUsers }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px">
+            <div style="font-size:20px;font-weight:800;letter-spacing:-0.4px">Users</div>
+            <button onClick="{{ startAddUser }}" style="background:#6fa793;border:none;color:#0c1316;padding:10px 18px;border-radius:24px;font-size:13.5px;font-weight:700;cursor:pointer">+ Add user</button>
+          </div>
+          <p style="font-size:13px;color:rgba(255,255,255,0.5);margin:0 0 18px">Each user books with their reservation code. Super Users can approve or deny requests.</p>
+
+          <sc-if value="{{ showUserForm }}" hint-placeholder-val="{{ false }}">
+            <div style="background:rgba(12,19,22,0.9);border:1px solid rgba(143,199,182,0.3);border-radius:16px;padding:22px;margin-bottom:18px">
+              <div style="font-size:16px;font-weight:800;margin-bottom:16px">{{ formTitle }}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                <div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px">Name</div>
+                  <input type="text" value="{{ formName }}" onInput="{{ setFormName }}" placeholder="Full name" class="adm-input">
+                </div>
+                <div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px">Email</div>
+                  <input type="text" value="{{ formEmail }}" onInput="{{ setFormEmail }}" placeholder="name@email.com" class="adm-input">
+                </div>
+                <div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px">Reservation code</div>
+                  <input type="text" value="{{ formCode }}" onInput="{{ setFormCode }}" placeholder="e.g. PIERCE7" class="adm-input" style="text-transform:uppercase;letter-spacing:1px">
+                </div>
+                <div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px">Family</div>
+                  <div style="display:flex;gap:8px">
+                    <button onClick="{{ setFamilyPierce }}" style="{{ famPierceStyle }}">Pierce</button>
+                    <button onClick="{{ setFamilyThomas }}" style="{{ famThomasStyle }}">Thomas</button>
+                  </div>
+                </div>
+              </div>
+              <button onClick="{{ toggleFormSuper }}" style="{{ superToggleStyle }}">
+                <span style="{{ superDotStyle }}"></span>{{ superToggleLabel }}
+              </button>
+              <div style="display:flex;gap:10px;margin-top:18px">
+                <button onClick="{{ saveUser }}" style="background:#6fa793;border:none;color:#0c1316;padding:11px 22px;border-radius:24px;font-size:13.5px;font-weight:700;cursor:pointer">Save</button>
+                <button onClick="{{ cancelUserForm }}" style="background:none;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:11px 20px;border-radius:24px;font-size:13.5px;font-weight:600;cursor:pointer">Cancel</button>
+              </div>
+              <sc-if value="{{ showFormError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12.5px;font-weight:600;color:#f0b3a6;margin-top:12px">{{ formError }}</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <div style="display:grid;gap:10px">
+            <sc-for list="{{ users }}" as="user" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:16px;background:rgba(12,19,22,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 20px">
+                <div style="{{ user.avatarStyle }}">{{ user.initials }}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <span style="font-size:15.5px;font-weight:700">{{ user.name }}</span>
+                    <sc-if value="{{ user.superUser }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:4px 10px;border-radius:14px;background:rgba(232,200,120,0.16);border:1px solid rgba(232,200,120,0.34);color:#e8c877">Super User</span>
+                    </sc-if>
+                  </div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:2px">{{ user.email }} · {{ user.family }}</div>
+                </div>
+                <span style="font-family:monospace;font-size:13px;font-weight:700;letter-spacing:1px;color:#a7d0c4;background:rgba(111,167,147,0.12);border:1px solid rgba(111,167,147,0.28);padding:6px 12px;border-radius:8px">{{ user.code }}</span>
+                <button onClick="{{ user.edit }}" title="Edit" style="flex-shrink:0;background:none;border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.8);padding:8px 14px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer">Edit</button>
+                <button onClick="{{ user.remove }}" title="Remove" style="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.7);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1" style-hover="flex-shrink:0;width:32px;height:32px;border-radius:50%;background:rgba(210,90,70,0.18);border:1px solid rgba(210,90,70,0.4);color:#e39b8c;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1">×</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PRIORITY -->
+      <sc-if value="{{ showPriority }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:20px;font-weight:800;letter-spacing:-0.4px;margin-bottom:6px">Booking Priority</div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);margin:0 0 20px;max-width:520px">When both families request overlapping dates, the family with priority is approved first. Rotate it each season.</p>
+          <div style="display:grid;gap:10px;max-width:520px">
+            <sc-for list="{{ priority }}" as="fam" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:16px;background:rgba(12,19,22,0.82);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px 20px">
+                <div style="width:30px;height:30px;border-radius:8px;background:rgba(143,199,182,0.16);border:1px solid rgba(143,199,182,0.3);color:#a7d0c4;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800">{{ fam.rank }}</div>
+                <div style="flex:1;font-size:16px;font-weight:700">{{ fam.name }} family</div>
+                <span style="{{ fam.tagStyle }}">{{ fam.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ swapPriority }}" style="margin-top:18px;background:none;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:11px 20px;border-radius:24px;font-size:13.5px;font-weight:600;cursor:pointer">Swap priority</button>
+        </div>
+      </sc-if>
+
+      <!-- PHOTOS -->
+      <sc-if value="{{ showPhotos }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px">
+            <div style="font-size:20px;font-weight:800;letter-spacing:-0.4px">Photos</div>
+            <a href="Photos.dc.html" target="_blank" rel="noopener" style="font-size:13px;font-weight:600;color:#7fb6a6">View gallery page ↗</a>
+          </div>
+          <p style="font-size:14px;color:rgba(255,255,255,0.6);margin:0 0 20px;max-width:560px">This is the same gallery shown on the Photos page. Drop an image onto a tile to set it, add tiles for more photos, or remove a tile — changes appear on the public Photos page.</p>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:130px;gap:12px">
+            <sc-for list="{{ photoSlots }}" as="slot" hint-placeholder-count="9">
+              <div style="{{ slot.wrapStyle }}">
+                <image-slot id="{{ slot.id }}" placeholder="{{ slot.label }}" style="width:100%;height:100%;border-radius:14px"></image-slot>
+                <button onClick="{{ slot.remove }}" title="Remove tile" style="position:absolute;top:8px;right:8px;z-index:5;width:28px;height:28px;border-radius:50%;background:rgba(12,19,22,0.75);border:1px solid rgba(255,255,255,0.2);color:#fff;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center" style-hover="position:absolute;top:8px;right:8px;z-index:5;width:28px;height:28px;border-radius:50%;background:rgba(210,90,70,0.85);border:1px solid rgba(210,90,70,0.9);color:#fff;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+              </div>
+            </sc-for>
+            <button onClick="{{ addPhoto }}" style="grid-column:span 2;grid-row:span 1;border-radius:14px;background:rgba(255,255,255,0.04);border:1.5px dashed rgba(143,199,182,0.4);color:#a7d0c4;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700" style-hover="grid-column:span 2;grid-row:span 1;border-radius:14px;background:rgba(111,167,147,0.12);border:1.5px dashed rgba(143,199,182,0.7);color:#c7e6db;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Add photo
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 1100 } }">
+class Component extends DCLogic {
+  state = {
+    tab: 'Reservations',
+    reservations: [],
+    users: [],
+    userForm: null,
+    formError: '',
+    places: [
+      { id: 1, category: 'Dining', name: "ELA's Blu Water Grille", drive: '5 min walk', desc: 'Waterfront dining at Shelter Cove Marina. Sunset reservations are everything.' },
+      { id: 2, category: 'Dining', name: "San Miguel's", drive: '5 min walk', desc: 'Casual Mexican right on the marina \u2014 frozen margaritas + tacos.' },
+      { id: 3, category: 'Dining', name: "Hudson's Seafood House", drive: '10 min drive', desc: 'Local institution. Get the shrimp. Cash-friendly, no reservations.' },
+      { id: 4, category: 'Dining', name: 'Skull Creek Boathouse', drive: '15 min drive', desc: 'Sunset views, dock-and-dine. Good for groups.' },
+      { id: 5, category: 'Dining', name: 'Poseidon', drive: '8 min walk', desc: 'Rooftop bar at Shelter Cove Towne Centre. Great for cocktails.' },
+      { id: 6, category: 'Beach', name: 'Burkes Beach', drive: '10 min drive', desc: 'Closest public beach access. Wide sand, less crowded than Coligny.' },
+      { id: 7, category: 'Beach', name: 'Islanders Beach Park', drive: '12 min drive', desc: 'Resident-friendly, restrooms, picnic tables. Bring the parking pass.' },
+      { id: 8, category: 'Beach', name: 'Coligny Beach Park', drive: '15 min drive', desc: 'Big public beach with shops + restaurants nearby.' },
+      { id: 9, category: 'Beach', name: 'Driessen Beach Park', drive: '10 min drive', desc: 'Boardwalk through the dunes. Great for sunrise walks.' },
+      { id: 10, category: 'Bike & Trails', name: 'Cross Island Path', drive: 'At door', desc: 'Paved bike path running across the island. Pick it up right at Shelter Cove.' },
+      { id: 11, category: 'Bike & Trails', name: 'Pinckney Island Refuge', drive: '8 min drive', desc: 'Flat, scenic dirt trails through the marsh. Amazing wildlife.' },
+      { id: 12, category: 'Bike & Trails', name: 'Beach Riding (Low Tide)', drive: '10 min drive', desc: 'Ride the hard sand at low tide \u2014 check tide chart first.' },
+      { id: 13, category: 'Bike & Trails', name: 'Hilton Head Bicycle Co.', drive: '5 min drive', desc: 'Rentals, repairs, and recommended routes if you brought your own.' },
+      { id: 14, category: 'Bike & Trails', name: 'Shelter Cove Loop', drive: 'At door', desc: 'Easy 4-mile loop around the marina + community. Good for kids.' },
+      { id: 15, category: 'Activities', name: 'Shelter Cove Marina', drive: '5 min walk', desc: 'Boats, dolphin tours, sunset cruises \u2014 all leave from here.' },
+      { id: 16, category: 'Activities', name: 'Harbour Town Lighthouse', drive: '20 min drive', desc: 'Walk up for the view. Sea Pines fee at the gate.' },
+      { id: 17, category: 'Activities', name: 'Outside Hilton Head', drive: '5 min walk', desc: 'Kayak + paddleboard rentals, marsh tours. Book ahead in summer.' },
+      { id: 18, category: 'Activities', name: 'Coastal Discovery Museum', drive: '8 min drive', desc: 'Free, easy walking trails + butterfly garden. Great rainy-day backup.' },
+      { id: 19, category: 'Groceries', name: 'Publix at Shelter Cove', drive: '8 min walk', desc: 'Closest grocery, in the Towne Centre. Open until 10pm.' },
+      { id: 20, category: 'Groceries', name: 'Fresh Market', drive: '5 min drive', desc: 'Nicer produce + prepared foods. Worth the short drive.' },
+      { id: 21, category: 'Groceries', name: 'Harris Teeter (Coligny)', drive: '15 min drive', desc: 'Full-size grocery near Coligny Plaza, wide selection. Good for a big stock-up.' },
+      { id: 22, category: 'Groceries', name: 'Kroger (Pineland Station)', drive: '12 min drive', desc: 'Large, well-stocked, usually less crowded than the Publix by the marina.' },
+      { id: 23, category: 'Groceries', name: 'Whole Foods Market', drive: '15 min drive', desc: 'Organic + specialty groceries, good prepared foods bar for a quick dinner.' },
+      { id: 24, category: 'Groceries', name: 'Piggly Wiggly (Sea Pines Center)', drive: '20 min drive', desc: 'Small, convenient, in-season for quick top-ups near Sea Pines.' },
+      { id: 25, category: 'Groceries', name: 'The Store (Bluffton)', drive: '20 min drive', desc: 'Local butcher + market with excellent seafood and meats, worth the trip.' },
+    ],
+    priority: ['Pierce', 'Thomas'],
+    photoSlots: [],
+    nextId: 100,
+  };
+  async componentDidMount() {
+    this.resStore = await import('./reservation-store.js');
+    this.userStore = await import('./user-store.js');
+    this.photoStore = await import('./photo-store.js');
+    this.setState({
+      reservations: this.resStore.getAll(),
+      users: this.userStore.getAll(),
+      photoSlots: this.photoStore.getSlots(),
+    });
+  }
+  reloadRes() { this.setState({ reservations: this.resStore.getAll() }); }
+  reloadUsers() { this.setState({ users: this.userStore.getAll() }); }
+
+  superIds() { return this.state.users.filter(u => u.superUser).map(u => u.id); }
+  vote(id, kind) {
+    const me = this.userStore.getCurrentUser();
+    if (!me) return;
+    this.resStore.castVote(id, me.id, kind, this.superIds());
+    this.reloadRes();
+  }
+
+  addPlace() {
+    this.setState(s => ({
+      nextId: s.nextId + 1,
+      places: [{ id: s.nextId, category: 'Dining', name: 'New place', drive: '—', desc: 'Add a description for this spot.' }, ...s.places],
+    }));
+  }
+  removePlace(id) { this.setState(s => ({ places: s.places.filter(p => p.id !== id) })); }
+  swapPriority() { this.setState(s => ({ priority: [...s.priority].reverse() })); }
+  addPhoto() { this.setState({ photoSlots: this.photoStore.addSlot('New photo') }); }
+  removePhotoSlot(id) { this.setState({ photoSlots: this.photoStore.removeSlot(id) }); }
+
+  startAddUser() { this.setState({ userForm: { name: '', email: '', family: 'Pierce', code: '', superUser: false }, formError: '' }); }
+  startEditUser(u) { this.setState({ userForm: { ...u }, formError: '' }); }
+  setFormField(field, val) { this.setState(s => ({ userForm: { ...s.userForm, [field]: val }, formError: '' })); }
+  cancelUserForm() { this.setState({ userForm: null, formError: '' }); }
+  saveUser() {
+    const f = this.state.userForm;
+    if (!f.name.trim()) return this.setState({ formError: 'Enter a name.' });
+    if (!f.code.trim()) return this.setState({ formError: 'Enter a reservation code.' });
+    const code = f.code.trim().toUpperCase();
+    const clash = this.userStore.getAll().find(u => u.id !== f.id && (u.code || '').toUpperCase() === code);
+    if (clash) return this.setState({ formError: `Code ${code} is already used by ${clash.name}.` });
+    const patch = { name: f.name.trim(), email: f.email.trim(), family: f.family, code, superUser: !!f.superUser };
+    if (f.id) this.userStore.update(f.id, patch);
+    else this.userStore.add(patch);
+    this.setState({ userForm: null, formError: '', users: this.userStore.getAll() });
+  }
+  removeUser(id) { this.userStore.remove(id); this.reloadUsers(); }
+
+  avatar(fam) {
+    const c = fam === 'Pierce'
+      ? { bg: 'rgba(255,107,74,0.18)', bd: 'rgba(255,107,74,0.4)', fg: '#ff9a80' }
+      : { bg: 'rgba(111,167,147,0.18)', bd: 'rgba(111,167,147,0.4)', fg: '#a7d0c4' };
+    return `flex-shrink:0;width:42px;height:42px;border-radius:50%;background:${c.bg};border:1px solid ${c.bd};color:${c.fg};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800`;
+  }
+  statusStyle(status) {
+    const m = {
+      approved: 'rgba(111,167,147,0.16);border:1px solid rgba(111,167,147,0.3);color:#a7d0c4',
+      pending: 'rgba(230,190,90,0.16);border:1px solid rgba(230,190,90,0.32);color:#e8c877',
+      denied: 'rgba(210,90,70,0.16);border:1px solid rgba(210,90,70,0.34);color:#e39b8c',
+    };
+    return `font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:6px 14px;border-radius:20px;white-space:nowrap;background:${m[status]}`;
+  }
+  renderVals() {
+    const tab = this.state.tab;
+    const ui = this.userStore;
+    const rs = this.resStore;
+    const tabNames = ['Reservations', 'Around the House', 'Users', 'Priority', 'Photos'];
+    const tabBase = 'padding:10px 18px;border-radius:24px;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;';
+    const tabs = tabNames.map(name => ({
+      label: name,
+      onClick: () => this.setState({ tab: name }),
+      style: tabBase + (name === tab
+        ? 'background:#6fa793;border:1px solid #6fa793;color:#0c1316'
+        : 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.8)'),
+    }));
+
+    const me = ui ? ui.getCurrentUser() : null;
+    const superIds = this.state.users.filter(u => u.superUser).map(u => u.id);
+    const rank = { pending: 0, approved: 1, denied: 2 };
+    const reservations = [...this.state.reservations]
+      .sort((a, b) => (rank[a.status] - rank[b.status]) || (a.checkIn < b.checkIn ? -1 : 1))
+      .map(r => {
+        const info = rs ? rs.voteInfo(r, superIds) : { approvals: 0, denials: 0, needed: 1, superCount: 0 };
+        const myApprove = me && (r.approvals || []).includes(me.id);
+        const myDeny = me && (r.denials || []).includes(me.id);
+        return {
+          ...r,
+          initials: ui ? ui.initials(r.name) : '',
+          dates: rs ? rs.formatRange(r.checkIn, r.checkOut) : '',
+          nightsLabel: rs ? `${rs.nights(r.checkIn, r.checkOut)} nights` : '',
+          isPending: r.status === 'pending',
+          isDecided: r.status !== 'pending',
+          avatarStyle: this.avatar(r.family),
+          statusStyle: this.statusStyle(r.status),
+          statusLabel: r.status,
+          voteLabel: `${info.approvals} of ${info.needed} approvals needed · ${info.superCount} super users`,
+          approveLabel: myApprove ? '✓ Approved' : 'Approve',
+          denyLabel: myDeny ? '✓ Denied' : 'Deny',
+          approveStyle: myApprove
+            ? 'background:#4d7d6a;border:none;color:#eafff8;padding:9px 18px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer'
+            : 'background:#6fa793;border:none;color:#0c1316;padding:9px 18px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer',
+          denyStyle: myDeny
+            ? 'background:rgba(210,90,70,0.3);border:1px solid rgba(210,90,70,0.5);color:#e39b8c;padding:9px 16px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer'
+            : 'background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);padding:9px 16px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer',
+          approve: () => this.vote(r.id, 'approve'),
+          deny: () => this.vote(r.id, 'deny'),
+        };
+      });
+    const pendingCount = this.state.reservations.filter(r => r.status === 'pending').length;
+    const pendingLabel = pendingCount === 0 ? 'All caught up' : `${pendingCount} pending`;
+
+    const catOrder = ['Dining', 'Beach', 'Bike & Trails', 'Activities', 'Groceries'];
+    const placeGroups = catOrder.map(cat => {
+      const items = this.state.places.filter(p => p.category === cat)
+        .map(p => ({ ...p, remove: () => this.removePlace(p.id) }));
+      return { cat, count: items.length, items };
+    }).filter(g => g.count > 0);
+
+    const users = this.state.users.map(u => ({
+      ...u,
+      initials: ui ? ui.initials(u.name) : '',
+      avatarStyle: this.avatar(u.family),
+      edit: () => this.startEditUser(u),
+      remove: () => this.removeUser(u.id),
+    }));
+
+    const f = this.state.userForm;
+    const famBtn = active => 'flex:1;padding:11px 0;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;' + (active
+      ? 'background:#6fa793;border:1px solid #6fa793;color:#0c1316'
+      : 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.8)');
+    const superOn = f && f.superUser;
+
+    const priority = this.state.priority.map((name, i) => ({
+      name,
+      rank: i + 1,
+      tag: i === 0 ? 'First pick' : 'Second',
+      tagStyle: i === 0
+        ? 'font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:5px 12px;border-radius:16px;background:rgba(143,199,182,0.16);border:1px solid rgba(143,199,182,0.3);color:#a7d0c4'
+        : 'font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:5px 12px;border-radius:16px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.55)',
+    }));
+
+    const photoSlots = this.state.photoSlots.map(s => ({
+      ...s,
+      wrapStyle: `position:relative;grid-column:span ${s.col};grid-row:span ${s.row}`,
+      remove: () => this.removePhotoSlot(s.id),
+    }));
+
+    return {
+      tabs,
+      showReservations: tab === 'Reservations',
+      showPlaces: tab === 'Around the House',
+      showUsers: tab === 'Users',
+      showPriority: tab === 'Priority',
+      showPhotos: tab === 'Photos',
+      reservations, pendingLabel,
+      placeGroups, addPlace: () => this.addPlace(),
+      users,
+      startAddUser: () => this.startAddUser(),
+      showUserForm: !!f,
+      formTitle: f && f.id ? 'Edit user' : 'Add user',
+      formName: f ? f.name : '',
+      formEmail: f ? f.email : '',
+      formCode: f ? f.code : '',
+      setFormName: e => this.setFormField('name', e.target.value),
+      setFormEmail: e => this.setFormField('email', e.target.value),
+      setFormCode: e => this.setFormField('code', e.target.value),
+      setFamilyPierce: () => this.setFormField('family', 'Pierce'),
+      setFamilyThomas: () => this.setFormField('family', 'Thomas'),
+      famPierceStyle: famBtn(f && f.family === 'Pierce'),
+      famThomasStyle: famBtn(f && f.family === 'Thomas'),
+      toggleFormSuper: () => this.setFormField('superUser', !superOn),
+      superToggleLabel: superOn ? 'Super User — can approve requests' : 'Make Super User',
+      superToggleStyle: 'display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;' + (superOn
+        ? 'background:rgba(232,200,120,0.16);border:1px solid rgba(232,200,120,0.4);color:#e8c877'
+        : 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.16);color:rgba(255,255,255,0.7)'),
+      superDotStyle: 'width:9px;height:9px;border-radius:50%;' + (superOn ? 'background:#e8c877' : 'background:rgba(255,255,255,0.3)'),
+      saveUser: () => this.saveUser(),
+      cancelUserForm: () => this.cancelUserForm(),
+      showFormError: !!this.state.formError,
+      formError: this.state.formError,
+      priority, swapPriority: () => this.swapPriority(),
+      photoSlots, addPhoto: () => this.addPhoto(),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:'Manrope',system-ui,sans-serif;background:#0c1316;color:#fff;-webkit-font-smoothing:antialiased}
+  a{color:#7fb6a6;text-decoration:none}
+  a:hover{color:#a7d0c4}
+</style>
+</helmet>
+
+<div style="width:100%;max-width:1440px;margin:0 auto;background:#0c1316;min-height:100vh;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:1180px;max-width:100%;height:700px;z-index:0">
+    <div style="position:absolute;inset:0;background-image:url('uploads/IMG_3307.JPEG');background-size:cover;background-position:center 30%"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,19,22,0.5) 0%,rgba(12,19,22,0.32) 22%,rgba(12,19,22,0.6) 50%,rgba(12,19,22,0.9) 78%,#0c1316 96%)"></div>
+  </div>
+  <div style="position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 48px">
+
+    <!-- NAV -->
+    <dc-import name="Header" active="calendar" hint-size="100%,90px"></dc-import>
+
+    <!-- HEADING -->
+    <div style="padding:44px 0 28px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="width:34px;height:1px;background:#8fc7b6"></span>
+        <span style="font-size:12px;letter-spacing:3px;font-weight:600;color:#a7d0c4">AVAILABILITY</span>
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-weight:600;font-size:52px;line-height:1;letter-spacing:-1px;margin:0">Booking Calendar</h1>
+      <p style="font-size:15px;color:rgba(255,255,255,0.6);margin:14px 0 0;max-width:520px">Check open dates for the P/T Beach House and pick the days you'd like to stay.</p>
+    </div>
+
+    <!-- LEGEND -->
+    <div style="display:flex;align-items:center;gap:26px;margin-bottom:22px;font-size:13px;color:rgba(255,255,255,0.7)">
+      <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:4px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12)"></span>Available</div>
+      <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:4px;background:rgba(111,167,147,0.9)"></span>Selected</div>
+      <div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)"></span><span style="opacity:0.5">Booked</span></div>
+    </div>
+
+    <!-- CALENDARS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;padding-bottom:20px">
+      <sc-for list="{{ months }}" as="month" hint-placeholder-count="2">
+        <div style="background:rgba(12,19,22,0.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px 24px 28px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:600">{{ month.label }}</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.45)">{{ month.year }}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px">
+            <sc-for list="{{ weekdays }}" as="wd" hint-placeholder-count="7">
+              <div style="text-align:center;font-size:11px;font-weight:700;letter-spacing:0.5px;color:rgba(255,255,255,0.4);padding-bottom:4px">{{ wd }}</div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+            <sc-for list="{{ month.cells }}" as="cell" hint-placeholder-count="35">
+              <div onClick="{{ cell.onClick }}" style="{{ cell.style }}">{{ cell.day }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- SELECTION SUMMARY -->
+    <div style="background:rgba(14,22,25,0.72);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:22px 26px;margin-bottom:60px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:38px">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.5px;color:rgba(255,255,255,0.45);margin-bottom:5px">CHECK-IN</div>
+            <div style="font-size:17px;font-weight:700">{{ checkInLabel }}</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.7"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <div>
+            <div style="font-size:11px;letter-spacing:0.5px;color:rgba(255,255,255,0.45);margin-bottom:5px">CHECK-OUT</div>
+            <div style="font-size:17px;font-weight:700">{{ checkOutLabel }}</div>
+          </div>
+          <div style="padding-left:24px;border-left:1px solid rgba(255,255,255,0.1)">
+            <div style="font-size:11px;letter-spacing:0.5px;color:rgba(255,255,255,0.45);margin-bottom:5px">NIGHTS</div>
+            <div style="font-size:17px;font-weight:700;color:#a7d0c4">{{ nightsLabel }}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div>
+            <div style="font-size:11px;letter-spacing:0.5px;color:rgba(255,255,255,0.45);margin-bottom:5px">GUESTS</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button onClick="{{ decGuests }}" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+              <span style="font-size:15px;font-weight:700;min-width:16px;text-align:center">{{ guests }}</span>
+              <button onClick="{{ incGuests }}" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+            </div>
+          </div>
+          <div style="padding-left:20px;border-left:1px solid rgba(255,255,255,0.1)">
+            <div style="font-size:11px;letter-spacing:0.5px;color:rgba(255,255,255,0.45);margin-bottom:5px">RESERVATION CODE</div>
+            <input type="text" value="{{ code }}" onInput="{{ setCode }}" placeholder="e.g. PIERCE7" style="width:150px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:11px;padding:9px 12px;font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:600;letter-spacing:1px;color:#fff;outline:none;text-transform:uppercase">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-left:auto">
+          <button onClick="{{ clear }}" style="background:none;border:1px solid rgba(255,255,255,0.16);color:#fff;padding:13px 20px;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer">Clear</button>
+          <button onClick="{{ requestDates }}" style="display:flex;align-items:center;gap:9px;background:#6fa793;border:none;color:#0c1316;padding:14px 26px;border-radius:30px;font-size:14.5px;font-weight:700;cursor:pointer">
+            Request These Dates
+            <span style="width:22px;height:22px;border-radius:50%;background:rgba(12,19,22,0.18);display:flex;align-items:center;justify-content:center">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0c1316" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+      <sc-if value="{{ showMsg }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ msgStyle }}">{{ msgText }}</div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 980 }
+}">
+class Component extends DCLogic {
+  state = { start: null, end: null, guests: 4, code: '', msg: null };
+
+  async componentDidMount() {
+    this.resStore = await import('./reservation-store.js');
+    this.userStore = await import('./user-store.js');
+    this.forceUpdate();
+  }
+
+  setMsg(type, text) { this.setState({ msg: { type, text } }); }
+
+  iso(sel) {
+    if (!sel) return null;
+    const m = this.monthDefs.find(x => x.key === sel.key);
+    const mi = Number(sel.key.split('-')[1]) + 1;
+    return `${m.year}-${String(mi).padStart(2, '0')}-${String(sel.day).padStart(2, '0')}`;
+  }
+
+  requestDates() {
+    if (!this.resStore || !this.userStore) return;
+    const s = this.state.start, e = this.state.end;
+    if (!s || !e) return this.setMsg('error', 'Pick your check-in and check-out dates on the calendar.');
+    const checkIn = this.iso(s), checkOut = this.iso(e);
+    const code = (this.state.code || '').trim();
+    if (!code) return this.setMsg('error', 'Enter your reservation code to continue.');
+    const user = this.userStore.findByCode(code);
+    if (!user) return this.setMsg('error', 'That reservation code wasn\u2019t recognized. Check with the house admins.');
+    const conflict = this.resStore.overlaps(checkIn, checkOut);
+    if (conflict) {
+      const label = conflict.status === 'approved' ? 'booked' : 'pending';
+      return this.setMsg('error', `Those dates are already ${label} for the ${conflict.family} family. Try different dates.`);
+    }
+    this.resStore.add({ name: user.name, family: user.family, code: user.code, checkIn, checkOut, status: 'pending' });
+    this.userStore.setCurrentUserCode(user.code);
+    this.setMsg('success', `Thanks ${user.name.split(' ')[0]} — your request was sent to the house admins for approval. Track it under My Trips.`);
+  }
+
+  // Static demo data: two months, some pre-booked day-numbers per month
+  monthDefs = [
+    { key: '2026-5', label: 'June', year: 2026, days: 30, startDow: 1, booked: [6, 7, 8, 20, 21] },
+    { key: '2026-6', label: 'July', year: 2026, days: 31, startDow: 3, booked: [3, 4, 5, 17, 18, 24, 25] },
+  ];
+
+  fmt(sel) {
+    if (!sel) return '—';
+    const m = this.monthDefs.find(x => x.key === sel.key);
+    return m.label + ' ' + sel.day + ', ' + m.year;
+  }
+
+  serial(sel) {
+    // simple ordering across the two demo months
+    const idx = this.monthDefs.findIndex(x => x.key === sel.key);
+    return idx * 100 + sel.day;
+  }
+
+  pick(key, day) {
+    const sel = { key, day };
+    const s = this.state.start, e = this.state.end;
+    if (!s || (s && e)) { this.setState({ start: sel, end: null }); return; }
+    // have start, no end
+    if (this.serial(sel) <= this.serial(s)) { this.setState({ start: sel, end: null }); return; }
+    this.setState({ end: sel });
+  }
+
+  inRange(key, day) {
+    const s = this.state.start, e = this.state.end;
+    if (!s) return { sel: false, mid: false };
+    const v = this.serial({ key, day });
+    const vs = this.serial(s);
+    if (!e) return { sel: v === vs, mid: false };
+    const ve = this.serial(e);
+    if (v === vs || v === ve) return { sel: true, mid: false };
+    if (v > vs && v < ve) return { sel: false, mid: true };
+    return { sel: false, mid: false };
+  }
+
+  renderVals() {
+    const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const months = this.monthDefs.map(m => {
+      const cells = [];
+      for (let i = 0; i < m.startDow; i++) cells.push({ day: '', style: 'height:38px', onClick: null });
+      for (let d = 1; d <= m.days; d++) {
+        const booked = m.booked.includes(d);
+        const { sel, mid } = this.inRange(m.key, d);
+        let bg = 'rgba(255,255,255,0.05)', color = '#fff', border = '1px solid rgba(255,255,255,0.08)', cursor = 'pointer', op = '1', weight = '600';
+        if (booked) { bg = 'rgba(255,255,255,0.02)'; color = 'rgba(255,255,255,0.28)'; border = '1px solid rgba(255,255,255,0.05)'; cursor = 'not-allowed'; op = '1'; weight = '500'; }
+        else if (sel) { bg = '#6fa793'; color = '#0c1316'; border = '1px solid #6fa793'; weight = '800'; }
+        else if (mid) { bg = 'rgba(111,167,147,0.22)'; color = '#dff0ea'; border = '1px solid rgba(111,167,147,0.3)'; }
+        const style = `height:38px;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:13.5px;font-weight:${weight};background:${bg};color:${color};border:${border};cursor:${cursor};opacity:${op};transition:background 0.15s,color 0.15s`;
+        cells.push({ day: d, style, onClick: booked ? null : () => this.pick(m.key, d) });
+      }
+      return { label: m.label, year: m.year, cells };
+    });
+
+    const s = this.state.start, e = this.state.end;
+    let nights = '—';
+    if (s && e) nights = String(this.serial(e) - this.serial(s));
+    else if (s && !e) nights = '0';
+
+    const msg = this.state.msg;
+    const msgBase = 'font-size:12.5px;font-weight:600;line-height:1.45;padding:11px 14px;border-radius:11px;margin-top:16px;';
+    return {
+      weekdays, months,
+      checkInLabel: this.fmt(s),
+      checkOutLabel: this.fmt(e),
+      nightsLabel: nights,
+      guests: this.state.guests,
+      code: this.state.code,
+      setCode: e => this.setState({ code: e.target.value, msg: null }),
+      incGuests: () => this.setState(st => ({ guests: Math.min(6, st.guests + 1) })),
+      decGuests: () => this.setState(st => ({ guests: Math.max(1, st.guests - 1) })),
+      requestDates: () => this.requestDates(),
+      showMsg: !!msg,
+      msgText: msg ? msg.text : '',
+      msgStyle: msgBase + (msg && msg.type === 'success'
+        ? 'background:rgba(111,167,147,0.16);border:1px solid rgba(111,167,147,0.35);color:#bfe6d8'
+        : 'background:rgba(210,90,70,0.14);border:1px solid rgba(210,90,70,0.34);color:#f0b3a6'),
+      clear: () => this.setState({ start: null, end: null, msg: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>
