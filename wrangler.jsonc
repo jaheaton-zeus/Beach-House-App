@@ -7,18 +7,5 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "sheltercove-db",
-      "database_id": "cb881b24-9e24-4437-8d23-58e862d9c1a4"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "PHOTOS",
-      "bucket_name": "sheltercove-photos"
-    }
-  ]
+  }
 }

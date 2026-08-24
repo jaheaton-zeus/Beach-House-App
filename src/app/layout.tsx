@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Shelter Cove",
-  description: "The Pierce/Thomas Beach House — reservations, house info, and more.",
+  title: "Shelter Cove — Coming Soon",
+  description: "The Pierce/Thomas Beach House site is coming soon.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
