@@ -605,11 +605,19 @@ button {
 .sc-weather {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 8px 15px 8px 12px;
-  border-radius: 30px;
+  padding: 8px 0;
+}
+
+/* Right-aligned so the ragged edge of a long forecast falls away from the
+   header's right edge rather than into the nav. */
+.sc-weather__readout {
+  line-height: 1.15;
+  text-align: right;
+  /* Held to roughly the width the pill used to give it, so a long forecast
+     wraps instead of stretching out into the nav. */
+  max-width: 210px;
 }
 
 .sc-hdr__burger {
@@ -638,6 +646,7 @@ button {
 }
 
 .sc-modal {
+  position: relative;
   width: 100%;
   max-width: 400px;
   background: var(--glass-solid);
@@ -645,6 +654,26 @@ button {
   border-radius: 12px;
   padding: 28px 26px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.sc-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--subtle-border);
+}
+
+.sc-modal__close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* ---------- utilities ---------- */

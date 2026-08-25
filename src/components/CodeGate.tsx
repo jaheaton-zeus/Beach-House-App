@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { signInWithCode, type SignInResult } from "@/app/auth-actions";
-import { LockIcon } from "@/lib/icons";
+import { CloseIcon, LockIcon } from "@/lib/icons";
 
 import { InlineMessage } from "./ui";
 
@@ -33,6 +34,12 @@ export function CodeGate({
       <form action={formAction} className="sc-modal">
         <input type="hidden" name="requireSuper" value={requireSuper ? "1" : "0"} />
         <input type="hidden" name="path" value={path} />
+
+        {/* There is nothing to sign out of, so dismissing the prompt just
+            returns to the home page. */}
+        <Link href="/" className="sc-modal__close" aria-label="Close">
+          <CloseIcon />
+        </Link>
 
         <div
           style={{
