@@ -1,7 +1,24 @@
 {
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "beach-house-app",
-  "compatibility_date": "2026-08-24",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-03",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
-    "directory": "./"
-  }
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sheltercove-db",
+      "database_id": "c599bc32-4a12-4a88-9d3f-e74c19b7cf28"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "sheltercove-photos"
+    }
+  ]
 }
