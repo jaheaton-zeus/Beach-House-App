@@ -392,6 +392,16 @@ button {
   letter-spacing: normal;
 }
 
+.sc-booking {
+  padding: 26px 24px;
+}
+
+.sc-booking__title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+}
+
 .sc-datepair {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -415,6 +425,7 @@ button {
   .sc-datepair {
     grid-template-columns: 1fr;
   }
+
 }
 
 .sc-field-label {
@@ -1659,5 +1670,27 @@ button {
 
   .sc-gallery--admin > form {
     grid-column: span 1 !important;
+  }
+}
+
+/*
+ * Phone sizing for the booking card. This has to come after the `max-width:
+ * 900px` block above, which also sets .sc-booking's max-width — at equal
+ * specificity the later rule is the one that lands.
+ *
+ * Edge-to-edge reads as cramped, so the card sits in from the page's own
+ * padding and loses a little of its interior bulk with it.
+ */
+@media (max-width: 560px) {
+  .sc-booking {
+    max-width: 322px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 22px 20px;
+    border-radius: 18px;
+  }
+
+  .sc-booking__title {
+    font-size: 23px;
   }
 }

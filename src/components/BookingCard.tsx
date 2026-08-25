@@ -19,8 +19,8 @@ export function BookingCard() {
   );
 
   return (
-    <form action={formAction} className="sc-glass sc-booking" style={{ padding: "26px 24px" }}>
-      <div style={{ fontFamily: "var(--serif)", fontSize: 26, fontWeight: 600 }}>
+    <form action={formAction} className="sc-glass sc-booking">
+      <div className="sc-booking__title">
         Schedule Your Stay
       </div>
       <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", margin: "4px 0 22px" }}>
