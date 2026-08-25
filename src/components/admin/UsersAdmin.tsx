@@ -119,9 +119,9 @@ export function UsersAdmin({ users, viewerId }: { users: UserRow[]; viewerId: nu
 
       <div style={{ display: "grid", gap: 10 }}>
         {users.map((user) => (
-          <div key={user.id} className="sc-admin-row" style={{ padding: "16px 20px", gap: 16 }}>
+          <div key={user.id} className="sc-admin-row sc-user-row">
             <Avatar name={user.name} family={user.family} />
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="sc-user-row__info">
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 15.5, fontWeight: 700 }}>{user.name}</span>
                 {user.super_user === 1 ? <span className="sc-superbadge">Super User</span> : null}
@@ -130,37 +130,39 @@ export function UsersAdmin({ users, viewerId }: { users: UserRow[]; viewerId: nu
                 {user.email} · {user.family}
               </div>
             </div>
-            <span className="sc-codechip">{user.code}</span>
-            <button
-              type="button"
-              className="sc-btn sc-btn--ghost sc-btn--sm"
-              style={{ padding: "8px 14px", fontSize: 12.5 }}
-              onClick={() => setForm({ user })}
-            >
-              Edit
-            </button>
-            {user.id === viewerId ? (
-              <span
-                className="sc-removebtn"
-                title="You can’t remove yourself"
-                aria-hidden
-                style={{ opacity: 0.3, cursor: "default" }}
+            <div className="sc-user-row__actions">
+              <span className="sc-codechip">{user.code}</span>
+              <button
+                type="button"
+                className="sc-btn sc-btn--ghost sc-btn--sm"
+                style={{ padding: "8px 14px", fontSize: 12.5 }}
+                onClick={() => setForm({ user })}
               >
-                ×
-              </span>
-            ) : (
-              <form action={removeUser}>
-                <input type="hidden" name="id" value={user.id} />
-                <button
-                  type="submit"
+                Edit
+              </button>
+              {user.id === viewerId ? (
+                <span
                   className="sc-removebtn"
-                  title={`Remove ${user.name}`}
-                  aria-label={`Remove ${user.name}`}
+                  title="You can’t remove yourself"
+                  aria-hidden
+                  style={{ opacity: 0.3, cursor: "default" }}
                 >
                   ×
-                </button>
-              </form>
-            )}
+                </span>
+              ) : (
+                <form action={removeUser}>
+                  <input type="hidden" name="id" value={user.id} />
+                  <button
+                    type="submit"
+                    className="sc-removebtn"
+                    title={`Remove ${user.name}`}
+                    aria-label={`Remove ${user.name}`}
+                  >
+                    ×
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         ))}
       </div>

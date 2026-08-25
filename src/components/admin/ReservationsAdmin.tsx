@@ -37,9 +37,9 @@ export function ReservationsAdmin({
       ) : (
         <div style={{ display: "grid", gap: 12 }}>
           {sorted.map((res) => (
-            <div key={res.id} className="sc-admin-row">
+            <div key={res.id} className="sc-admin-row sc-resv-row">
               <Avatar name={res.guest_name} family={res.family} />
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="sc-resv-row__info">
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 16, fontWeight: 700 }}>{res.guest_name}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.45)" }}>
@@ -53,20 +53,12 @@ export function ReservationsAdmin({
               </div>
 
               {res.status === "pending" ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    gap: 7,
-                  }}
-                >
+                <div className="sc-resv-row__vote">
                   <div
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
                       color: "rgba(255,255,255,0.5)",
-                      whiteSpace: "nowrap",
                     }}
                   >
                     {res.approvals} of {needed} approvals needed · {superCount} super users

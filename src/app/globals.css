@@ -1458,6 +1458,101 @@ button {
   padding: 18px 22px;
 }
 
+.sc-resv-row__info {
+  flex: 1;
+  min-width: 150px;
+}
+
+.sc-resv-row__vote {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+/* Same story as the user rows: the request and its vote controls cannot share
+   a line on a phone without squeezing the name and dates into a column of
+   single words, so the controls drop underneath. */
+@media (max-width: 700px) {
+  .sc-resv-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "avatar info"
+      "vote vote";
+    align-items: center;
+    gap: 12px 14px;
+  }
+
+  .sc-resv-row > .sc-avatar {
+    grid-area: avatar;
+  }
+
+  .sc-resv-row__info {
+    grid-area: info;
+    min-width: 0;
+  }
+
+  .sc-resv-row__vote {
+    grid-area: vote;
+    align-items: flex-start;
+  }
+
+  .sc-resv-row > .sc-status {
+    grid-area: vote;
+    justify-self: start;
+  }
+}
+
+.sc-user-row {
+  padding: 16px 20px;
+  gap: 16px;
+}
+
+.sc-user-row__info {
+  flex: 1;
+  /* Deliberately not min-width: 0. Letting this column shrink to nothing is
+     what collapsed it to 2px on a phone, spilling the name and badge on top
+     of the code chip instead of wrapping the row. */
+  min-width: 150px;
+}
+
+.sc-user-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Below this the five pieces cannot share a line at a readable size, so the
+   controls take their own row underneath the person. */
+@media (max-width: 700px) {
+  .sc-user-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "avatar info"
+      "actions actions";
+    align-items: center;
+    gap: 12px 14px;
+  }
+
+  .sc-user-row > .sc-avatar {
+    grid-area: avatar;
+  }
+
+  .sc-user-row__info {
+    grid-area: info;
+    min-width: 0;
+  }
+
+  .sc-user-row__actions {
+    grid-area: actions;
+    flex-wrap: wrap;
+  }
+}
+
 .sc-admin-form {
   background: rgba(12, 19, 22, 0.9);
   border: 1px solid rgba(143, 199, 182, 0.3);
