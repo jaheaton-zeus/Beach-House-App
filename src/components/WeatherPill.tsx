@@ -38,13 +38,15 @@ export function WeatherPill() {
 
   return (
     <div className="sc-weather">
-      <span style={{ fontSize: 20, lineHeight: 1 }}>{iconFor(weather.desc, weather.day)}</span>
+      {/* Icon last so it lands on the right edge with the text, rather than
+          stranded on the far side of a right-aligned block. */}
       <div className="sc-weather__readout">
         <div style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{weather.temp}</div>
         <div style={{ fontSize: 10.5, letterSpacing: 0.3, color: "rgba(255,255,255,0.6)" }}>
           {weather.desc}
         </div>
       </div>
+      <span style={{ fontSize: 20, lineHeight: 1 }}>{iconFor(weather.desc, weather.day)}</span>
     </div>
   );
 }
