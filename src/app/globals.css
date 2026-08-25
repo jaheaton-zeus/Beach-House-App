@@ -1708,6 +1708,121 @@ button {
   border-color: rgba(143, 199, 182, 0.6);
 }
 
+/* The caption doubles as the rename control, so it sits outside the tile's
+   upload button — a button cannot be nested inside another button. */
+.sc-slot__caption--edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 4;
+  max-width: calc(100% - 24px);
+  border: none;
+  background: none;
+  padding: 2px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--sans);
+  text-align: left;
+}
+
+.sc-slot__caption--edit span {
+  opacity: 0;
+  font-size: 11px;
+  transition: opacity 0.15s;
+}
+
+.sc-slot__caption--edit:hover {
+  background: rgba(12, 19, 22, 0.7);
+}
+
+.sc-slot__caption--edit:hover span,
+.sc-slot__caption--edit:focus-visible span {
+  opacity: 0.8;
+}
+
+.sc-slot__rename {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 6;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sc-slot__rename input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(12, 19, 22, 0.92);
+  border: 1px solid rgba(143, 199, 182, 0.5);
+  border-radius: 8px;
+  padding: 7px 9px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+}
+
+.sc-slot__rename button {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--sage);
+  border: none;
+  color: #0c1316;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sc-addtile--form {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  cursor: default;
+  border-style: solid;
+  border-color: rgba(143, 199, 182, 0.45);
+}
+
+.sc-addtile__label {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+}
+
+.sc-addtile--form input {
+  width: 100%;
+  background: var(--subtle-fill);
+  border: 1px solid var(--subtle-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+}
+
+.sc-addtile--form input:focus {
+  border-color: rgba(111, 167, 147, 0.6);
+}
+
+.sc-addtile__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sc-addtile__actions .sc-btn {
+  padding: 7px 14px;
+  font-size: 12.5px;
+}
+
 .sc-tile-remove {
   width: 28px;
   height: 28px;

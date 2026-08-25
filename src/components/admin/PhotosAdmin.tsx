@@ -3,21 +3,25 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-import { addPhotoSlot, removePhotoSlot } from "@/app/admin-actions";
+import { addPhotoSlot, removePhotoSlot, renamePhotoSlot } from "@/app/admin-actions";
 import type { GalleryPhotoRow } from "@/lib/db";
 import { PlusIcon } from "@/lib/icons";
 import { photoUrl } from "@/lib/photo-url";
 import { InlineMessage } from "@/components/ui";
 
 /**
- * One gallery tile. The upload posts to the Route Handler rather than a Server
- * Action — real photos are far bigger than the 1MB Server Action body cap.
+ * One gallery tile: the image area picks a file, and the caption underneath
+ * doubles as the rename control.
+ *
+ * The upload posts to the Route Handler rather than a Server Action — real
+ * photos are far bigger than the 1MB Server Action body cap.
  */
 function PhotoTile({ slot }: { slot: GalleryPhotoRow }) {
   const input = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState(false);
 
   const upload = async (file: File) => {
     setBusy(true);
@@ -58,10 +62,13 @@ function PhotoTile({ slot }: { slot: GalleryPhotoRow }) {
         }}
         onClick={() => input.current?.click()}
         disabled={busy}
+        title={slot.r2_key ? "Replace this photo" : "Upload a photo"}
       >
-        <span className={slot.r2_key ? "sc-slot__caption" : "sc-slot__placeholder"}>
-          {busy ? "Uploading…" : slot.label}
-        </span>
+        {busy ? (
+          <span className="sc-slot__placeholder">Uploading…</span>
+        ) : slot.r2_key ? null : (
+          <span className="sc-slot__placeholder">Click to upload</span>
+        )}
       </button>
 
       <input
@@ -76,6 +83,41 @@ function PhotoTile({ slot }: { slot: GalleryPhotoRow }) {
         }}
       />
 
+      {renaming ? (
+        <form
+          action={renamePhotoSlot}
+          className="sc-slot__rename"
+          onSubmit={() => setRenaming(false)}
+        >
+          <input type="hidden" name="id" value={slot.id} />
+          <input
+            name="label"
+            type="text"
+            defaultValue={slot.label}
+            autoFocus
+            required
+            maxLength={60}
+            aria-label="Photo description"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setRenaming(false);
+            }}
+          />
+          <button type="submit" title="Save description" aria-label="Save description">
+            ✓
+          </button>
+        </form>
+      ) : (
+        <button
+          type="button"
+          className="sc-slot__caption sc-slot__caption--edit"
+          onClick={() => setRenaming(true)}
+          title="Rename this photo"
+        >
+          {slot.label}
+          <span aria-hidden>✎</span>
+        </button>
+      )}
+
       <form action={removePhotoSlot} style={{ position: "absolute", top: 8, right: 8, zIndex: 5 }}>
         <input type="hidden" name="id" value={slot.id} />
         <button
@@ -89,11 +131,67 @@ function PhotoTile({ slot }: { slot: GalleryPhotoRow }) {
       </form>
 
       {error ? (
-        <div style={{ position: "absolute", left: 8, right: 8, bottom: 8, zIndex: 6 }}>
+        <div style={{ position: "absolute", left: 8, right: 8, bottom: 40, zIndex: 6 }}>
           <InlineMessage kind="err">{error}</InlineMessage>
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** The dashed "add" tile, which asks for the description up front. */
+function AddTile() {
+  const [adding, setAdding] = useState(false);
+
+  if (!adding) {
+    return (
+      <button
+        type="button"
+        className="sc-addtile"
+        style={{ gridColumn: "span 2", gridRow: "span 1" }}
+        onClick={() => setAdding(true)}
+      >
+        <PlusIcon size={22} strokeWidth={2} />
+        Add photo
+      </button>
+    );
+  }
+
+  return (
+    <form
+      action={addPhotoSlot}
+      className="sc-addtile sc-addtile--form"
+      style={{ gridColumn: "span 2", gridRow: "span 1" }}
+      onSubmit={() => setAdding(false)}
+    >
+      <label className="sc-addtile__label" htmlFor="new-photo-label">
+        Description
+      </label>
+      <input
+        id="new-photo-label"
+        name="label"
+        type="text"
+        placeholder="e.g. Sunset from the dock"
+        autoFocus
+        required
+        maxLength={60}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setAdding(false);
+        }}
+      />
+      <div className="sc-addtile__actions">
+        <button type="submit" className="sc-btn sc-btn--sm">
+          Add
+        </button>
+        <button
+          type="button"
+          className="sc-btn sc-btn--ghost sc-btn--sm"
+          onClick={() => setAdding(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -116,22 +214,16 @@ export function PhotosAdmin({ slots }: { slots: GalleryPhotoRow[] }) {
         </a>
       </div>
       <p style={{ fontSize: 14, color: "var(--text-2)", margin: "0 0 20px", maxWidth: 560, lineHeight: 1.55 }}>
-        This is the same gallery shown on the Photos page. Click a tile to set its image, add tiles
-        for more photos, or remove one — changes appear on the public Photos page.
+        This is the same gallery shown on the Photos page. Click a tile to set its image, click its
+        description to rename it, add tiles for more photos, or remove one — changes appear on the
+        public Photos page.
       </p>
 
       <div className="sc-gallery sc-gallery--admin">
         {slots.map((slot) => (
           <PhotoTile key={slot.id} slot={slot} />
         ))}
-
-        <form action={addPhotoSlot} style={{ gridColumn: "span 2", gridRow: "span 1" }}>
-          <input type="hidden" name="label" value="New photo" />
-          <button type="submit" className="sc-addtile">
-            <PlusIcon size={22} strokeWidth={2} />
-            Add photo
-          </button>
-        </form>
+        <AddTile />
       </div>
     </div>
   );

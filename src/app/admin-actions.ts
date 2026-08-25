@@ -200,7 +200,7 @@ export async function swapPriority(): Promise<void> {
 
 export async function addPhotoSlot(formData: FormData): Promise<void> {
   await requireSuperUser();
-  const label = String(formData.get("label") ?? "").trim() || "New photo";
+  const label = String(formData.get("label") ?? "").trim() || "Untitled photo";
 
   const db = await getDb();
   const last = await db
@@ -214,6 +214,19 @@ export async function addPhotoSlot(formData: FormData): Promise<void> {
     )
     .bind(`house-photo-${Date.now()}`, label, (last?.n ?? 0) + 1)
     .run();
+
+  refresh();
+  revalidatePath("/house/photos");
+}
+
+export async function renamePhotoSlot(formData: FormData): Promise<void> {
+  await requireSuperUser();
+  const id = Number(formData.get("id"));
+  const label = String(formData.get("label") ?? "").trim();
+  if (!Number.isFinite(id) || !label) return;
+
+  const db = await getDb();
+  await db.prepare("UPDATE gallery_photos SET label = ?1 WHERE id = ?2").bind(label, id).run();
 
   refresh();
   revalidatePath("/house/photos");
