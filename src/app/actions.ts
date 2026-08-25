@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { setCodeCookie } from "@/lib/auth";
 import { getDb } from "@/lib/db";
+import { notifyReservationRequested } from "@/lib/email";
 import { isValidDateString, rangesOverlap } from "@/lib/format";
 import { getBlockingReservations, getUserByCode } from "@/lib/queries";
 
@@ -58,6 +59,8 @@ export async function requestBooking(
     };
   }
 
+  const guestCount = Math.min(6, Math.max(1, Number.isFinite(guests) ? guests : 1));
+
   const db = await getDb();
   await db
     .prepare(
@@ -65,20 +68,20 @@ export async function requestBooking(
          (user_id, guest_name, family, code, check_in, check_out, guest_count, status)
        VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, 'pending')`
     )
-    .bind(
-      user.id,
-      user.name,
-      user.family,
-      user.code,
-      checkIn,
-      checkOut,
-      Math.min(6, Math.max(1, Number.isFinite(guests) ? guests : 1))
-    )
+    .bind(user.id, user.name, user.family, user.code, checkIn, checkOut, guestCount)
     .run();
 
   // Booking is also how someone identifies themselves — this is what makes
   // My Trips show their stays without a login.
   await setCodeCookie(user.code);
+
+  await notifyReservationRequested({
+    guestName: user.name,
+    family: user.family,
+    checkIn,
+    checkOut,
+    guestCount,
+  });
 
   revalidatePath("/calendar");
   revalidatePath("/mytrips");

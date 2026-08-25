@@ -20,5 +20,14 @@
       "binding": "PHOTOS",
       "bucket_name": "sheltercove-photos"
     }
-  ]
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "remote": true
+    }
+  ],
+  "vars": {
+    "NOTIFY_OVERRIDE_EMAIL": "jaheaton@gmail.com"
+  }
 }

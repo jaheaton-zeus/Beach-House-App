@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 
 import { requireSuperUser } from "@/lib/auth";
-import { getDb, getPhotoBucket, type Family, type PlaceCategory } from "@/lib/db";
-import { getSuperUserIds, majorityNeeded } from "@/lib/queries";
+import { getDb, getPhotoBucket, type Family, type PlaceCategory, type ReservationStatus } from "@/lib/db";
+import { notifyReservationDecision } from "@/lib/email";
+import { getSuperUserIds, getUserByCode, majorityNeeded } from "@/lib/queries";
 
 export type AdminResult = { ok: boolean; message: string } | null;
 
@@ -28,6 +29,22 @@ async function resolveStatus(reservationId: number): Promise<void> {
   const superIds = await getSuperUserIds();
   const needed = majorityNeeded(superIds.length);
 
+  const reservation = await db
+    .prepare(
+      `SELECT status, user_id, code, guest_name, check_in, check_out
+         FROM reservations WHERE id = ?1`
+    )
+    .bind(reservationId)
+    .first<{
+      status: ReservationStatus;
+      user_id: number | null;
+      code: string;
+      guest_name: string;
+      check_in: string;
+      check_out: string;
+    }>();
+  if (!reservation) return;
+
   const tally = await db
     .prepare(
       `SELECT
@@ -45,10 +62,33 @@ async function resolveStatus(reservationId: number): Promise<void> {
 
   const status = approvals >= needed ? "approved" : denials >= needed ? "denied" : "pending";
 
+  if (status === reservation.status) return;
+
   await db
     .prepare("UPDATE reservations SET status = ?1 WHERE id = ?2")
     .bind(status, reservationId)
     .run();
+
+  if (status === "approved" || status === "denied") {
+    const email = reservation.user_id
+      ? (
+          await db
+            .prepare("SELECT email FROM users WHERE id = ?1")
+            .bind(reservation.user_id)
+            .first<{ email: string }>()
+        )?.email
+      : (await getUserByCode(reservation.code))?.email;
+
+    if (email) {
+      await notifyReservationDecision({
+        email,
+        guestName: reservation.guest_name,
+        checkIn: reservation.check_in,
+        checkOut: reservation.check_out,
+        status,
+      });
+    }
+  }
 }
 
 export async function castVote(formData: FormData): Promise<void> {
