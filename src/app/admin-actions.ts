@@ -31,7 +31,7 @@ async function resolveStatus(reservationId: number): Promise<void> {
 
   const reservation = await db
     .prepare(
-      `SELECT status, user_id, code, guest_name, check_in, check_out
+      `SELECT status, user_id, code, guest_name, check_in, check_out, guest_count
          FROM reservations WHERE id = ?1`
     )
     .bind(reservationId)
@@ -42,6 +42,7 @@ async function resolveStatus(reservationId: number): Promise<void> {
       guest_name: string;
       check_in: string;
       check_out: string;
+      guest_count: number;
     }>();
   if (!reservation) return;
 
@@ -85,6 +86,7 @@ async function resolveStatus(reservationId: number): Promise<void> {
         guestName: reservation.guest_name,
         checkIn: reservation.check_in,
         checkOut: reservation.check_out,
+        guestCount: reservation.guest_count,
         status,
       });
     }

@@ -63,6 +63,10 @@ export function nightsLabel(checkIn: string, checkOut: string): string {
   return `${n} ${n === 1 ? "night" : "nights"}`;
 }
 
+export function guestsLabel(guestCount: number): string {
+  return `${guestCount} ${guestCount === 1 ? "guest" : "guests"}`;
+}
+
 /** "Sep 12 – 19, 2026", collapsing the month when both dates share one. */
 export function formatRange(checkIn: string, checkOut: string): string {
   if (!isValidDateString(checkIn) || !isValidDateString(checkOut)) return "";
@@ -80,6 +84,14 @@ export function formatLongDate(value: string): string {
   if (!isValidDateString(value)) return "—";
   const d = parseLocalDate(value);
   return `${MONTHS_LONG[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+/** "Jun 12 → Jun 16, 2026" — the arrow-separated style used in emails. */
+export function formatEmailDateRange(checkIn: string, checkOut: string): string {
+  if (!isValidDateString(checkIn) || !isValidDateString(checkOut)) return "";
+  const a = parseLocalDate(checkIn);
+  const b = parseLocalDate(checkOut);
+  return `${MONTHS_SHORT[a.getMonth()]} ${a.getDate()} → ${MONTHS_SHORT[b.getMonth()]} ${b.getDate()}, ${b.getFullYear()}`;
 }
 
 /** The "SEP / 12" chip on a My Trips row. */
