@@ -1683,14 +1683,31 @@ button {
  */
 @media (max-width: 560px) {
   .sc-booking {
-    max-width: 322px;
+    max-width: 300px;
     margin-left: auto;
     margin-right: auto;
-    padding: 22px 20px;
+    padding: 20px 18px;
     border-radius: 18px;
   }
 
   .sc-booking__title {
-    font-size: 23px;
+    font-size: 22px;
+  }
+
+  /* Rows come down with the card so it reads smaller, not just narrower.
+     11px of vertical padding keeps every control around 40px tall, which is
+     still a comfortable touch target. */
+  .sc-booking .sc-input {
+    padding: 11px 12px;
+    font-size: 13.5px;
+  }
+
+  .sc-booking .sc-stepper {
+    padding: 9px 10px 9px 12px;
+  }
+
+  .sc-booking .sc-btn--block {
+    padding: 13px;
+    font-size: 14.5px;
   }
 }
