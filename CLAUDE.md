@@ -38,6 +38,23 @@ counting — `resolveStatus()` in `src/app/admin-actions.ts` re-derives status
 from the votes that still count, and re-runs across all reservations whenever
 the user list changes.
 
+## Deploying: the postinstall build shim
+
+Workers Builds runs `npm clean-install` and then the trigger's deploy command.
+This project's trigger has **no build command** — a leftover from when the repo
+served a static "Coming Soon" page — and its deploy command is a bare
+`npx wrangler deploy`. Wrangler detects the OpenNext project and hands off to
+`opennextjs-cloudflare deploy` *before* running any build of its own, so with
+no build step the deploy dies on "Could not find compiled Open Next config".
+
+`scripts/workers-ci-build.mjs`, wired to npm's `postinstall`, puts that step
+back: it runs `opennextjs-cloudflare build` when `WORKERS_CI` is set, and
+no-ops everywhere else so a developer's `npm install` is untouched.
+
+**This is a shim, not the intended arrangement.** Setting the trigger's build
+command to `npx opennextjs-cloudflare build` in the dashboard does the same job
+properly; once that is set, delete the script and the `postinstall` hook.
+
 ## Database changes
 
 The database is new and has no manual-console history, so wrangler's own
