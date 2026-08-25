@@ -75,6 +75,8 @@ export type AccessDetailRow = {
   label: string;
   value: string;
   note: string | null;
+  /** "detail" renders a label/value row; "wifi_qr" renders the join code. */
+  kind: "detail" | "wifi_qr";
   sort_order: number;
 };
 
