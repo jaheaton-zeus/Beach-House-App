@@ -1465,6 +1465,15 @@ button {
   background-color: rgba(255, 255, 255, 0.04);
 }
 
+button.sc-slot {
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
 .sc-slot--empty {
   border: 1px dashed rgba(255, 255, 255, 0.16);
   display: flex;
@@ -1499,6 +1508,75 @@ button {
   .sc-slot {
     grid-column: span 1 !important;
     grid-row: span 1 !important;
+  }
+}
+
+/* ---------- lightbox ---------- */
+
+.sc-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 12, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.sc-lightbox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 92vw;
+}
+
+.sc-lightbox__img {
+  display: block;
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  background: var(--glass-solid);
+}
+
+.sc-lightbox__caption {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.sc-lightbox__close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.sc-lightbox__nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.sc-lightbox__nav--prev {
+  left: 20px;
+}
+
+.sc-lightbox__nav--next {
+  right: 20px;
+}
+
+@media (max-width: 640px) {
+  .sc-lightbox__nav {
+    width: 28px;
+    height: 28px;
   }
 }
 
