@@ -376,6 +376,7 @@ button {
 
 .sc-input--date {
   color-scheme: dark;
+  min-width: 0;
   border-radius: 11px;
   padding: 11px 12px;
   font-size: 13.5px;
@@ -389,6 +390,31 @@ button {
 .sc-input::placeholder {
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: normal;
+}
+
+.sc-datepair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+/*
+ * Grid items default to `min-width: auto`, and a native date input reports a
+ * min-content width of about 175px. Two of those plus the card's padding come
+ * to more than a phone screen, and because nothing is allowed to shrink the
+ * whole booking card gets forced wider than the viewport — which is what made
+ * the two fields collide on iOS. Letting them shrink, and stacking them once
+ * there is no longer room for a readable pair, fixes it at both ends.
+ */
+.sc-datepair > * {
+  min-width: 0;
+}
+
+@media (max-width: 560px) {
+  .sc-datepair {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sc-field-label {

@@ -27,14 +27,7 @@ export function BookingCard() {
         Reserve your dates at the beach house
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 12,
-          marginBottom: 14,
-        }}
-      >
+      <div className="sc-datepair">
         <div>
           <label className="sc-field-label" htmlFor="booking-checkin">
             <CalendarIcon />
