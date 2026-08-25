@@ -1,8 +1,0 @@
-**/node_modules
-**/.DS_Store
-**/.git
-design_handoff_shelter_cove_redesign
-package.json
-package-lock.json
-wrangler.jsonc
-.assetsignore
