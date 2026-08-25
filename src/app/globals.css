@@ -374,12 +374,42 @@ button {
   border-color: rgba(111, 167, 147, 0.55);
 }
 
+/*
+ * iOS Safari sizes a date input from its own shadow DOM while the native
+ * appearance is on, ignoring both `width: 100%` and `box-sizing: border-box`.
+ * The field then renders its content box at the full width and adds padding
+ * and borders on top, pushing it about 26px past the card it sits in — which
+ * is exactly the overflow seen on an iPhone. Chromium does not do this, so it
+ * looks fine on the desktop and in headless tests.
+ *
+ * Turning the native appearance off is what makes the declared width bind.
+ * The picker still opens on tap; only the chrome around it changes.
+ */
 .sc-input--date {
+  -webkit-appearance: none;
+  appearance: none;
   color-scheme: dark;
+  display: block;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   border-radius: 11px;
   padding: 11px 12px;
   font-size: 13.5px;
+}
+
+/* Safari lays the value out in its own inner wrapper, which keeps the old
+   intrinsic width unless it is pinned too. */
+.sc-input--date::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+  min-width: 0;
+}
+
+.sc-input--date::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .sc-input--code {
