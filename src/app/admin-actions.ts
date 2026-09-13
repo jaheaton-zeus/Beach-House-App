@@ -176,6 +176,94 @@ export async function removePlace(formData: FormData): Promise<void> {
   revalidatePath("/bike-trails");
 }
 
+export async function saveFavorite(formData: FormData): Promise<void> {
+  await requireSuperUser();
+  const id = Number(formData.get("id"));
+  const name = String(formData.get("name") ?? "").trim();
+  const subtitle = String(formData.get("subtitle") ?? "").trim();
+  const rating = String(formData.get("rating") ?? "").trim();
+  const url = String(formData.get("url") ?? "").trim();
+  if (!name || !subtitle || !rating || !url) return;
+
+  const db = await getDb();
+  if (Number.isFinite(id) && id > 0) {
+    await db
+      .prepare(
+        `UPDATE local_favorites SET name = ?1, subtitle = ?2, rating = ?3, url = ?4 WHERE id = ?5`
+      )
+      .bind(name, subtitle, rating, url, id)
+      .run();
+  } else {
+    const last = await db
+      .prepare("SELECT max(sort_order) AS n FROM local_favorites")
+      .first<{ n: number | null }>();
+
+    await db
+      .prepare(
+        `INSERT INTO local_favorites (name, subtitle, rating, url, image_path, sort_order)
+         VALUES (?1, ?2, ?3, ?4, '', ?5)`
+      )
+      .bind(name, subtitle, rating, url, (last?.n ?? 0) + 1)
+      .run();
+  }
+
+  refresh();
+  revalidatePath("/");
+}
+
+export async function removeFavorite(formData: FormData): Promise<void> {
+  await requireSuperUser();
+  const id = Number(formData.get("id"));
+  if (!Number.isFinite(id)) return;
+
+  const db = await getDb();
+  const favorite = await db
+    .prepare("SELECT r2_key FROM local_favorites WHERE id = ?1")
+    .bind(id)
+    .first<{ r2_key: string | null }>();
+
+  await db.prepare("DELETE FROM local_favorites WHERE id = ?1").bind(id).run();
+
+  if (favorite?.r2_key) {
+    const bucket = await getPhotoBucket();
+    await bucket.delete(favorite.r2_key);
+  }
+
+  refresh();
+  revalidatePath("/");
+}
+
+export async function moveFavorite(formData: FormData): Promise<void> {
+  await requireSuperUser();
+  const id = Number(formData.get("id"));
+  const direction = String(formData.get("direction"));
+  if (!Number.isFinite(id) || (direction !== "up" && direction !== "down")) return;
+
+  const db = await getDb();
+  const { results } = await db
+    .prepare("SELECT id, sort_order FROM local_favorites ORDER BY sort_order")
+    .all<{ id: number; sort_order: number }>();
+
+  const index = results.findIndex((row) => row.id === id);
+  const swapIndex = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || swapIndex < 0 || swapIndex >= results.length) return;
+
+  const current = results[index];
+  const neighbor = results[swapIndex];
+
+  await db
+    .prepare("UPDATE local_favorites SET sort_order = ?1 WHERE id = ?2")
+    .bind(neighbor.sort_order, current.id)
+    .run();
+  await db
+    .prepare("UPDATE local_favorites SET sort_order = ?1 WHERE id = ?2")
+    .bind(current.sort_order, neighbor.id)
+    .run();
+
+  refresh();
+  revalidatePath("/");
+}
+
 export async function saveUser(formData: FormData): Promise<void> {
   await requireSuperUser();
   const id = Number(formData.get("id"));

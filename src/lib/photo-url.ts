@@ -13,3 +13,10 @@ export function photoKeyFor(slotKey: string, filename: string): string {
   const safeExt = /^[a-z0-9]{1,5}$/.test(ext) ? ext : "jpg";
   return `gallery/${slotKey}-${Date.now()}.${safeExt}`;
 }
+
+/** Build the R2 key for a Local Favorite's uploaded photo. */
+export function favoriteKeyFor(id: number, filename: string): string {
+  const ext = filename.includes(".") ? filename.split(".").pop()!.toLowerCase() : "jpg";
+  const safeExt = /^[a-z0-9]{1,5}$/.test(ext) ? ext : "jpg";
+  return `favorites/${id}-${Date.now()}.${safeExt}`;
+}

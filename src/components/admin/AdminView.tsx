@@ -5,18 +5,27 @@ import { useState } from "react";
 import type {
   FamilyPriorityRow,
   GalleryPhotoRow,
+  LocalFavoriteRow,
   PlaceRow,
   ReservationWithVotes,
   UserRow,
 } from "@/lib/db";
 
+import { FavoritesAdmin } from "./FavoritesAdmin";
 import { PhotosAdmin } from "./PhotosAdmin";
 import { PlacesAdmin } from "./PlacesAdmin";
 import { PriorityAdmin } from "./PriorityAdmin";
 import { ReservationsAdmin } from "./ReservationsAdmin";
 import { UsersAdmin } from "./UsersAdmin";
 
-const TABS = ["Reservations", "Around the House", "Users", "Priority", "Photos"] as const;
+const TABS = [
+  "Reservations",
+  "Around the House",
+  "Users",
+  "Priority",
+  "Photos",
+  "Favorites",
+] as const;
 type Tab = (typeof TABS)[number];
 
 export function AdminView({
@@ -25,6 +34,7 @@ export function AdminView({
   places,
   priority,
   photoSlots,
+  favorites,
   needed,
   superCount,
   viewerId,
@@ -34,6 +44,7 @@ export function AdminView({
   places: PlaceRow[];
   priority: FamilyPriorityRow[];
   photoSlots: GalleryPhotoRow[];
+  favorites: LocalFavoriteRow[];
   needed: number;
   superCount: number;
   viewerId: number;
@@ -67,6 +78,7 @@ export function AdminView({
         {tab === "Users" ? <UsersAdmin users={users} viewerId={viewerId} /> : null}
         {tab === "Priority" ? <PriorityAdmin priority={priority} /> : null}
         {tab === "Photos" ? <PhotosAdmin slots={photoSlots} /> : null}
+        {tab === "Favorites" ? <FavoritesAdmin favorites={favorites} /> : null}
       </div>
     </>
   );

@@ -65,6 +65,7 @@ export type LocalFavoriteRow = {
   rating: string;
   url: string;
   image_path: string;
+  r2_key: string | null;
   sort_order: number;
 };
 

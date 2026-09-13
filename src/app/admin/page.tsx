@@ -6,6 +6,7 @@ import { getCurrentUser, isSuperUser } from "@/lib/auth";
 import {
   getFamilyPriority,
   getGalleryPhotos,
+  getLocalFavorites,
   getPlaces,
   getReservationsWithVotes,
   getSuperUserIds,
@@ -38,14 +39,16 @@ export default async function AdminPage() {
     );
   }
 
-  const [reservations, users, places, priority, photoSlots, superIds] = await Promise.all([
-    getReservationsWithVotes(user!.id),
-    getUsers(),
-    getPlaces(),
-    getFamilyPriority(),
-    getGalleryPhotos(),
-    getSuperUserIds(),
-  ]);
+  const [reservations, users, places, priority, photoSlots, favorites, superIds] =
+    await Promise.all([
+      getReservationsWithVotes(user!.id),
+      getUsers(),
+      getPlaces(),
+      getFamilyPriority(),
+      getGalleryPhotos(),
+      getLocalFavorites(),
+      getSuperUserIds(),
+    ]);
 
   return (
     <div className="sc-page sc-page--tall">
@@ -63,6 +66,7 @@ export default async function AdminPage() {
           places={places}
           priority={priority}
           photoSlots={photoSlots}
+          favorites={favorites}
           needed={majorityNeeded(superIds.length)}
           superCount={superIds.length}
           viewerId={user!.id}

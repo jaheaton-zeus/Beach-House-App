@@ -1076,10 +1076,6 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .sc-fav-row > .sc-iconbtn {
-    display: none;
-  }
-
   .sc-tiles {
     grid-template-columns: repeat(2, 1fr);
   }

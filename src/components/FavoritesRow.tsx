@@ -1,44 +1,54 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 
 import type { LocalFavoriteRow } from "@/lib/db";
 import { ChevronLeft, ChevronRight, StarIcon } from "@/lib/icons";
+import { photoUrl } from "@/lib/photo-url";
+
+const PAGE_SIZE = 4;
 
 /**
- * The Local Favorites row. The arrows scroll the strip — on a wide screen all
- * four cards fit and there is nothing to scroll, but on a narrow one they are
- * the way through the list.
+ * The Local Favorites row. Favorites page in groups of four — the arrows
+ * only render when there's more than one page, and wrap around at both ends.
  */
 export function FavoritesRow({ favorites }: { favorites: LocalFavoriteRow[] }) {
-  const strip = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(0);
+  // A favorite an admin just added but hasn't uploaded a photo for yet has no
+  // image to show — skip it on the public page rather than render a blank card.
+  const shown = favorites.filter((fav) => fav.r2_key || fav.image_path);
+  const pageCount = Math.ceil(shown.length / PAGE_SIZE);
+  const hasMultiplePages = pageCount > 1;
+  const visible = shown.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
-  const scrollBy = (direction: 1 | -1) => {
-    const el = strip.current;
-    if (!el) return;
-    el.scrollBy({ left: direction * Math.max(220, el.clientWidth * 0.6), behavior: "smooth" });
+  const go = (direction: 1 | -1) => {
+    setPage((current) => (current + direction + pageCount) % pageCount);
   };
 
   return (
     <div className="sc-fav-row">
-      <button
-        type="button"
-        className="sc-iconbtn"
-        aria-label="Previous favorites"
-        onClick={() => scrollBy(-1)}
-      >
-        <ChevronLeft />
-      </button>
+      {hasMultiplePages ? (
+        <button
+          type="button"
+          className="sc-iconbtn"
+          aria-label="Previous favorites"
+          onClick={() => go(-1)}
+        >
+          <ChevronLeft />
+        </button>
+      ) : null}
 
-      <div className="sc-fav-cards sc-scroll-x" ref={strip}>
-        {favorites.map((fav) => (
+      <div className="sc-fav-cards">
+        {visible.map((fav) => (
           <a
             key={fav.id}
             href={fav.url}
             target="_blank"
             rel="noopener noreferrer"
             className="sc-fav-card sc-hover-lift"
-            style={{ backgroundImage: `url('${fav.image_path}')` }}
+            style={{
+              backgroundImage: `url('${fav.r2_key ? photoUrl(fav.r2_key) : fav.image_path}')`,
+            }}
           >
             <div className="sc-fav-card__scrim" />
             <div className="sc-fav-card__meta">
@@ -63,14 +73,16 @@ export function FavoritesRow({ favorites }: { favorites: LocalFavoriteRow[] }) {
         ))}
       </div>
 
-      <button
-        type="button"
-        className="sc-iconbtn sc-iconbtn--sage"
-        aria-label="Next favorites"
-        onClick={() => scrollBy(1)}
-      >
-        <ChevronRight />
-      </button>
+      {hasMultiplePages ? (
+        <button
+          type="button"
+          className="sc-iconbtn sc-iconbtn--sage"
+          aria-label="Next favorites"
+          onClick={() => go(1)}
+        >
+          <ChevronRight />
+        </button>
+      ) : null}
     </div>
   );
 }
