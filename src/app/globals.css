@@ -666,6 +666,41 @@ button {
   color: #fff;
 }
 
+/* The badge video's backdrop is lifted to the page background, and the feathered
+   circular mask hides any last mismatch at its edge. */
+.sc-logo {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+}
+
+.sc-logo__loop,
+.sc-logo__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 88%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 88%, transparent 100%);
+}
+
+.sc-logo__still {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-logo__loop {
+    display: none;
+  }
+
+  .sc-logo__still {
+    display: block;
+  }
+}
+
 .sc-hdr__wordmark {
   font-weight: 800;
   font-size: 19px;

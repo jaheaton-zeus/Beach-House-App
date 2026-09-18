@@ -83,7 +83,7 @@ function emailShell(kicker: string, preheaderText: string, cardBodyHtml: string)
           <table role="presentation" cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="vertical-align:middle;padding-right:14px">
-                <img src="${SITE_URL}/email-logo.png" width="44" height="44" alt="Shelter Cove" style="display:block;width:44px;height:44px;border:0">
+                <img src="${SITE_URL}/email-logo.gif" width="60" height="60" alt="Shelter Cove" style="display:block;width:60px;height:60px;border:0">
               </td>
               <td style="vertical-align:middle">
                 <div style="font-family:${HEADING_FONT};font-weight:800;font-size:19px;color:#ffffff;letter-spacing:-0.01em">Shelter Cove</div>

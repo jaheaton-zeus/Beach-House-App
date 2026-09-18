@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { signOut } from "@/app/auth-actions";
-import { ChevronDown, MenuIcon, WaveMark } from "@/lib/icons";
+import { ChevronDown, MenuIcon } from "@/lib/icons";
 
 import { WeatherPill } from "./WeatherPill";
 
@@ -28,7 +28,20 @@ export function SiteHeaderClient({ userName }: { userName: string | null }) {
   return (
     <header className="sc-hdr">
       <Link href="/" className="sc-hdr__brand">
-        <WaveMark />
+        <span className="sc-logo" aria-hidden>
+          {/* Loops silently; the still stands in under prefers-reduced-motion. */}
+          <video
+            className="sc-logo__loop"
+            src="/logo/badge-loop.mp4"
+            poster="/logo/badge-still.png"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element -- static asset, images are unoptimized */}
+          <img className="sc-logo__still" src="/logo/badge-still.png" alt="" />
+        </span>
         <div style={{ lineHeight: 1 }}>
           <div className="sc-hdr__wordmark">SHELTER COVE</div>
         </div>
