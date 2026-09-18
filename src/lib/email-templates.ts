@@ -79,9 +79,18 @@ function emailShell(kicker: string, preheaderText: string, cardBodyHtml: string)
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:600px;max-width:600px;background:${CARD_BG};border-radius:18px;overflow:hidden;box-shadow:0 8px 30px rgba(14,42,77,0.12)">
     <tr><td style="padding:0">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%">
-        <tr><td style="background:${NAVY};padding:22px 32px" bgcolor="${NAVY}">
-          <div style="font-family:${HEADING_FONT};font-weight:800;font-size:19px;color:#ffffff;letter-spacing:-0.01em">Shelter Cove</div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:${NAVY_KICKER};margin-top:3px">${kicker}</div>
+        <tr><td style="background:${NAVY};padding:20px 32px" bgcolor="${NAVY}">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="vertical-align:middle;padding-right:14px">
+                <img src="${SITE_URL}/email-logo.png" width="44" height="44" alt="Shelter Cove" style="display:block;width:44px;height:44px;border:0">
+              </td>
+              <td style="vertical-align:middle">
+                <div style="font-family:${HEADING_FONT};font-weight:800;font-size:19px;color:#ffffff;letter-spacing:-0.01em">Shelter Cove</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:${NAVY_KICKER};margin-top:3px">${kicker}</div>
+              </td>
+            </tr>
+          </table>
         </td></tr>
       </table>
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%">

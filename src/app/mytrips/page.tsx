@@ -1,7 +1,6 @@
 import { CodeGate } from "@/components/CodeGate";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Kicker, SectionHeading, StatusPill } from "@/components/ui";
-import { signOut } from "@/app/auth-actions";
 import { getCurrentUser } from "@/lib/auth";
 import type { ReservationWithVotes } from "@/lib/db";
 import { dateChip, formatRange, nightsLabel, todayString } from "@/lib/format";
@@ -94,19 +93,6 @@ export default async function MyTripsPage() {
             }}
           >
             <h1 className="sc-h1">My Trips</h1>
-            <form action={signOut} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <input type="hidden" name="path" value="/mytrips" />
-              <span style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)" }}>
-                Viewing as <strong style={{ color: "#fff", fontWeight: 700 }}>{user.name}</strong>
-              </span>
-              <button
-                type="submit"
-                className="sc-btn sc-btn--ghost sc-btn--sm"
-                style={{ padding: "8px 16px" }}
-              >
-                Not you?
-              </button>
-            </form>
           </div>
         </div>
 

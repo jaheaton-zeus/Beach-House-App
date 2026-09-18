@@ -630,6 +630,31 @@ button {
   z-index: 20;
 }
 
+/* "Viewing as … Not you?" — a slim row under the header on every page. It sits
+   in the header's flex row but wraps onto its own line, right-aligned. */
+.sc-hdr {
+  flex-wrap: wrap;
+}
+
+.sc-hdr__viewer {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 0 6px;
+}
+
+.sc-hdr__viewer-text {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sc-hdr__viewer-text strong {
+  color: #fff;
+  font-weight: 700;
+}
+
 .sc-hdr a {
   text-decoration: none;
 }
