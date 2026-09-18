@@ -34,20 +34,6 @@ export async function getUserByCode(code: string): Promise<UserRow | null> {
     .first<UserRow>();
 }
 
-/** Ids of everyone who can currently vote. Drives the majority threshold. */
-export async function getSuperUserIds(): Promise<number[]> {
-  const db = await getDb();
-  const { results } = await db
-    .prepare("SELECT id FROM users WHERE super_user = 1")
-    .all<{ id: number }>();
-  return results.map((row: { id: number }) => row.id);
-}
-
-/** Majority of the current super users: 1 of 1, 2 of 2-3, 3 of 4-5. */
-export function majorityNeeded(superCount: number): number {
-  return Math.floor(superCount / 2) + 1;
-}
-
 /**
  * Every reservation with its vote tallies. Only votes from people who are
  * still super users count, so demoting someone re-opens what they decided.
@@ -62,7 +48,11 @@ export async function getReservationsWithVotes(viewerId?: number): Promise<Reser
               (SELECT count(*) FROM reservation_votes v JOIN users u ON u.id = v.user_id
                 WHERE v.reservation_id = r.id AND v.vote = 'deny' AND u.super_user = 1) AS denials,
               (SELECT v.vote FROM reservation_votes v
-                WHERE v.reservation_id = r.id AND v.user_id = ?1) AS my_vote
+                WHERE v.reservation_id = r.id AND v.user_id = ?1) AS my_vote,
+              (SELECT v.comment FROM reservation_votes v JOIN users u ON u.id = v.user_id
+                WHERE v.reservation_id = r.id AND v.vote = 'deny' AND u.super_user = 1
+                  AND v.comment IS NOT NULL
+                ORDER BY v.voted_at DESC LIMIT 1) AS deny_reason
          FROM reservations r
         ORDER BY r.check_in`
     )

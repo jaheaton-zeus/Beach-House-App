@@ -26,6 +26,14 @@ const THOMAS_AVATAR = "#6fa793";
 const HEADING_FONT = "'Plus Jakarta Sans',Arial,Helvetica,sans-serif";
 const BODY_FONT = "'DM Sans',Arial,Helvetica,sans-serif";
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function initials(name: string): string {
   const parts = (name || "").trim().split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
@@ -109,7 +117,7 @@ export function buildRequestedEmail(input: {
 
   const cardBody = `${pill("PENDING REVIEW", PENDING_BG, PENDING_FG)}
 <div style="font-family:${HEADING_FONT};font-weight:800;font-size:24px;line-height:1.15;color:${NAVY};letter-spacing:-0.02em;margin:16px 0 4px">${guestName} requested the house</div>
-<div style="font-size:15px;line-height:1.5;color:${BODY_TEXT};margin-bottom:22px">Two admin approvals confirm this stay; two denials decline it. Cast your vote in the app.</div>
+<div style="font-size:15px;line-height:1.5;color:${BODY_TEXT};margin-bottom:22px">The First Pick family's approval confirms this stay. Cast your vote in the app.</div>
 ${dateCard(dateRange, detail, CARD_BG, MUTED, BODY_TEXT, false)}
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;margin-top:16px">
   <tr>
@@ -129,7 +137,7 @@ ${ctaButton(`${SITE_URL}/admin`, "Review this request")}`;
     text: `${guestName} (${family}) requested ${dateRange} — ${detail}.\n\nReview it: ${SITE_URL}/admin`,
     html: emailShell(
       "RESERVATION REQUEST",
-      `${guestName} requested the house for ${dateRange}. Two admin approvals confirm it.`,
+      `${guestName} requested the house for ${dateRange}. The First Pick family's approval confirms it.`,
       cardBody
     ),
   };
@@ -141,8 +149,9 @@ export function buildDecisionEmail(input: {
   checkOut: string;
   guestCount: number;
   status: "approved" | "denied";
+  reason?: string;
 }): { subject: string; text: string; html: string } {
-  const { guestName, checkIn, checkOut, guestCount, status } = input;
+  const { guestName, checkIn, checkOut, guestCount, status, reason } = input;
   const dateRange = formatEmailDateRange(checkIn, checkOut);
   const detail = `${nightsLabel(checkIn, checkOut)} · ${guestsLabel(guestCount)}`;
   const firstName = guestName.split(" ")[0];
@@ -159,8 +168,16 @@ ${dateCard(dateRange, detail, APPROVED_BG, APPROVED_FG, "#12735F", false)}
 ${ctaButton(`${SITE_URL}/mytrips`, "View your trips")}`
     : `${pill("NOT APPROVED", DENIED_BG, DENIED_FG)}
 <div style="font-family:${HEADING_FONT};font-weight:800;font-size:24px;line-height:1.15;color:${NAVY};letter-spacing:-0.02em;margin:16px 0 4px">Your request wasn't approved this time</div>
-<div style="font-size:15px;line-height:1.5;color:${BODY_TEXT};margin-bottom:22px">Hi ${firstName} — the admins couldn't confirm the dates below. Often another family already had priority that week.</div>
+<div style="font-size:15px;line-height:1.5;color:${BODY_TEXT};margin-bottom:22px">Hi ${firstName} — the admins couldn't confirm the dates below. ${reason ? "Here's why:" : "Often another family already had priority that week."}</div>
 ${dateCard(dateRange, detail, CARD_BG, MUTED, BODY_TEXT, true)}
+${
+  reason
+    ? `<div style="margin-top:16px;padding:14px 16px;border-left:3px solid ${DENIED_FG};background:${DENIED_BG};border-radius:6px">
+  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;color:${DENIED_FG};margin-bottom:6px">REASON FROM THE ADMINS</div>
+  <div style="font-size:15px;line-height:1.55;color:${BODY_TEXT};white-space:pre-wrap">${escapeHtml(reason)}</div>
+</div>`
+    : ""
+}
 <div style="border-top:1px solid ${CARD_BORDER};margin:20px 0 0;padding-top:16px">
   <div style="font-size:14px;line-height:1.55;color:${BODY_TEXT}">Check the <a href="${SITE_URL}/calendar" style="color:${BLUE_CTA};text-decoration:none;font-weight:600">calendar</a> for open weeks and send a new request — the family can always talk it through together.</div>
 </div>
@@ -168,7 +185,7 @@ ${ctaButton(`${SITE_URL}/calendar`, "Find open dates")}`;
 
   return {
     subject: `Your Shelter Cove stay request was ${status}`,
-    text: `Hi ${firstName} — your stay request for ${dateRange} was ${status}.\n\nSee it in My Trips: ${SITE_URL}/mytrips`,
+    text: `Hi ${firstName} — your stay request for ${dateRange} was ${status}.${!approved && reason ? `\n\nReason from the admins: ${reason}` : ""}\n\nSee it in My Trips: ${SITE_URL}/mytrips`,
     html: emailShell(
       "BOOKING UPDATE",
       approved

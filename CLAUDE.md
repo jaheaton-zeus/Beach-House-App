@@ -32,11 +32,14 @@ code (`users.code`) that is their only credential:
 
 ## Voting
 
-Reservations resolve by majority of the **current** super users:
-`floor(superCount / 2) + 1`. Votes cast by someone who is later demoted stop
-counting — `resolveStatus()` in `src/app/admin-actions.ts` re-derives status
-from the votes that still count, and re-runs across all reservations whenever
-the user list changes.
+The **First Pick** family is `family_priority.rank = 1` (Admin → Priority swaps
+it). A super user from that family approving approves the reservation
+immediately; denying declines it immediately. The other family's super users
+can vote, but their votes never decide anything. Every denial requires a
+reason (`reservation_votes.comment`), which is included in the denial email.
+`resolveStatus()` in `src/app/admin-actions.ts` re-derives status from the
+votes that still count, and re-runs across all reservations whenever the user
+list changes or First Pick is swapped.
 
 ## Deploying: the postinstall build shim
 

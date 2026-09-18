@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type {
+  Family,
   FamilyPriorityRow,
   GalleryPhotoRow,
   LocalFavoriteRow,
@@ -35,8 +36,7 @@ export function AdminView({
   priority,
   photoSlots,
   favorites,
-  needed,
-  superCount,
+  firstPickFamily,
   viewerId,
 }: {
   reservations: ReservationWithVotes[];
@@ -45,8 +45,7 @@ export function AdminView({
   priority: FamilyPriorityRow[];
   photoSlots: GalleryPhotoRow[];
   favorites: LocalFavoriteRow[];
-  needed: number;
-  superCount: number;
+  firstPickFamily: Family | null;
   viewerId: number;
 }) {
   const [tab, setTab] = useState<Tab>("Reservations");
@@ -70,8 +69,7 @@ export function AdminView({
         {tab === "Reservations" ? (
           <ReservationsAdmin
             reservations={reservations}
-            needed={needed}
-            superCount={superCount}
+            firstPickFamily={firstPickFamily}
           />
         ) : null}
         {tab === "Around the House" ? <PlacesAdmin places={places} /> : null}

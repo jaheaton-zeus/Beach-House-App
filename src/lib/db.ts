@@ -45,6 +45,7 @@ export type ReservationWithVotes = ReservationRow & {
   approvals: number;
   denials: number;
   my_vote: "approve" | "deny" | null;
+  deny_reason: string | null;
 };
 
 export type PlaceRow = {

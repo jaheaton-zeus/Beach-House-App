@@ -9,9 +9,7 @@ import {
   getLocalFavorites,
   getPlaces,
   getReservationsWithVotes,
-  getSuperUserIds,
   getUsers,
-  majorityNeeded,
 } from "@/lib/queries";
 
 export default async function AdminPage() {
@@ -39,7 +37,7 @@ export default async function AdminPage() {
     );
   }
 
-  const [reservations, users, places, priority, photoSlots, favorites, superIds] =
+  const [reservations, users, places, priority, photoSlots, favorites] =
     await Promise.all([
       getReservationsWithVotes(user!.id),
       getUsers(),
@@ -47,7 +45,6 @@ export default async function AdminPage() {
       getFamilyPriority(),
       getGalleryPhotos(),
       getLocalFavorites(),
-      getSuperUserIds(),
     ]);
 
   return (
@@ -67,8 +64,7 @@ export default async function AdminPage() {
           priority={priority}
           photoSlots={photoSlots}
           favorites={favorites}
-          needed={majorityNeeded(superIds.length)}
-          superCount={superIds.length}
+          firstPickFamily={priority.find((p) => p.rank === 1)?.family ?? null}
           viewerId={user!.id}
         />
       </div>

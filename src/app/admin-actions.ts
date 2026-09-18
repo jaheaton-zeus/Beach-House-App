@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireSuperUser } from "@/lib/auth";
 import { getDb, getPhotoBucket, type Family, type PlaceCategory, type ReservationStatus } from "@/lib/db";
 import { notifyReservationDecision } from "@/lib/email";
-import { getSuperUserIds, getUserByCode, majorityNeeded } from "@/lib/queries";
+import { getUserByCode } from "@/lib/queries";
 
 export type AdminResult = { ok: boolean; message: string } | null;
 
@@ -21,13 +21,15 @@ function refresh() {
 
 /**
  * Re-derive a reservation's status from the votes that currently count.
- * Only votes cast by people who are *still* super users are counted, so
- * demoting someone reopens what their vote decided.
+ *
+ * Only a super user from the First Pick family (rank 1 in family_priority)
+ * decides: their approval approves the stay outright, their denial declines
+ * it. Votes from the other family are recorded but never decide anything.
+ * Votes from people who are no longer super users don't count, so demoting
+ * someone (or swapping First Pick) reopens what their vote decided.
  */
 async function resolveStatus(reservationId: number): Promise<void> {
   const db = await getDb();
-  const superIds = await getSuperUserIds();
-  const needed = majorityNeeded(superIds.length);
 
   const reservation = await db
     .prepare(
@@ -53,6 +55,7 @@ async function resolveStatus(reservationId: number): Promise<void> {
          sum(CASE WHEN v.vote = 'deny' THEN 1 ELSE 0 END) AS denials
        FROM reservation_votes v
        JOIN users u ON u.id = v.user_id AND u.super_user = 1
+       JOIN family_priority fp ON fp.family = u.family AND fp.rank = 1
       WHERE v.reservation_id = ?1`
     )
     .bind(reservationId)
@@ -61,7 +64,8 @@ async function resolveStatus(reservationId: number): Promise<void> {
   const approvals = tally?.approvals ?? 0;
   const denials = tally?.denials ?? 0;
 
-  const status = approvals >= needed ? "approved" : denials >= needed ? "denied" : "pending";
+  const status: ReservationStatus =
+    approvals > 0 ? "approved" : denials > 0 ? "denied" : "pending";
 
   if (status === reservation.status) return;
 
@@ -80,6 +84,21 @@ async function resolveStatus(reservationId: number): Promise<void> {
         )?.email
       : (await getUserByCode(reservation.code))?.email;
 
+    let reason: string | undefined;
+    if (status === "denied") {
+      const deciding = await db
+        .prepare(
+          `SELECT v.comment FROM reservation_votes v
+             JOIN users u ON u.id = v.user_id AND u.super_user = 1
+             JOIN family_priority fp ON fp.family = u.family AND fp.rank = 1
+            WHERE v.reservation_id = ?1 AND v.vote = 'deny'
+            ORDER BY v.voted_at DESC LIMIT 1`
+        )
+        .bind(reservationId)
+        .first<{ comment: string | null }>();
+      reason = deciding?.comment?.trim() || undefined;
+    }
+
     if (email) {
       await notifyReservationDecision({
         email,
@@ -88,6 +107,7 @@ async function resolveStatus(reservationId: number): Promise<void> {
         checkOut: reservation.check_out,
         guestCount: reservation.guest_count,
         status,
+        reason,
       });
     }
   }
@@ -99,26 +119,31 @@ export async function castVote(formData: FormData): Promise<void> {
   const vote = String(formData.get("vote"));
   if (!Number.isFinite(reservationId) || (vote !== "approve" && vote !== "deny")) return;
 
+  // A denial has to say why; the reason goes to the requestor in the email.
+  const comment = String(formData.get("comment") ?? "").trim().slice(0, 1000);
+
   const db = await getDb();
   const existing = await db
     .prepare("SELECT vote FROM reservation_votes WHERE reservation_id = ?1 AND user_id = ?2")
     .bind(reservationId, voter.id)
     .first<{ vote: string }>();
 
-  if (existing?.vote === vote) {
+  if (existing?.vote === vote && !comment) {
     // Clicking your own vote again takes it back.
     await db
       .prepare("DELETE FROM reservation_votes WHERE reservation_id = ?1 AND user_id = ?2")
       .bind(reservationId, voter.id)
       .run();
   } else {
+    if (vote === "deny" && !comment) return;
     await db
       .prepare(
-        `INSERT INTO reservation_votes (reservation_id, user_id, vote)
-         VALUES (?1, ?2, ?3)
-         ON CONFLICT (reservation_id, user_id) DO UPDATE SET vote = excluded.vote, voted_at = datetime('now')`
+        `INSERT INTO reservation_votes (reservation_id, user_id, vote, comment)
+         VALUES (?1, ?2, ?3, ?4)
+         ON CONFLICT (reservation_id, user_id) DO UPDATE
+           SET vote = excluded.vote, comment = excluded.comment, voted_at = datetime('now')`
       )
-      .bind(reservationId, voter.id, vote)
+      .bind(reservationId, voter.id, vote, vote === "deny" ? comment : null)
       .run();
   }
 
@@ -325,7 +350,16 @@ export async function swapPriority(): Promise<void> {
   await requireSuperUser();
   const db = await getDb();
   await db.prepare("UPDATE family_priority SET rank = CASE rank WHEN 1 THEN 2 ELSE 1 END").run();
+
+  // Who is First Pick decides every reservation, so re-derive them all.
+  const { results } = await db.prepare("SELECT id FROM reservations").all<{ id: number }>();
+  for (const row of results) {
+    await resolveStatus(row.id);
+  }
+
   refresh();
+  revalidatePath("/mytrips");
+  revalidatePath("/calendar");
 }
 
 export async function addPhotoSlot(formData: FormData): Promise<void> {

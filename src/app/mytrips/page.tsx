@@ -5,9 +5,9 @@ import { signOut } from "@/app/auth-actions";
 import { getCurrentUser } from "@/lib/auth";
 import type { ReservationWithVotes } from "@/lib/db";
 import { dateChip, formatRange, nightsLabel, todayString } from "@/lib/format";
-import { getReservationsByCode, getSuperUserIds, majorityNeeded } from "@/lib/queries";
+import { getFamilyPriority, getReservationsByCode } from "@/lib/queries";
 
-function TripRow({ trip, needed }: { trip: ReservationWithVotes; needed: number }) {
+function TripRow({ trip, firstPick }: { trip: ReservationWithVotes; firstPick: string | null }) {
   const chip = dateChip(trip.check_in);
   return (
     <div className="sc-trip">
@@ -26,7 +26,7 @@ function TripRow({ trip, needed }: { trip: ReservationWithVotes; needed: number 
         </div>
         {trip.status === "pending" ? (
           <div style={{ fontSize: 12, color: "var(--pending-text)", marginTop: 8 }}>
-            Awaiting review · {trip.approvals} of {needed} approvals so far
+            Awaiting review{firstPick ? ` · waiting on the ${firstPick} family` : ""}
           </div>
         ) : null}
       </div>
@@ -53,11 +53,11 @@ export default async function MyTripsPage() {
     );
   }
 
-  const [trips, superIds] = await Promise.all([
+  const [trips, priority] = await Promise.all([
     getReservationsByCode(user.code),
-    getSuperUserIds(),
+    getFamilyPriority(),
   ]);
-  const needed = majorityNeeded(superIds.length);
+  const firstPick = priority.find((p) => p.rank === 1)?.family ?? null;
   const today = todayString();
 
   const pending = trips.filter((t) => t.status === "pending");
@@ -119,7 +119,7 @@ export default async function MyTripsPage() {
               ) : (
                 <div style={{ display: "grid", gap: 12 }}>
                   {group.items.map((trip) => (
-                    <TripRow key={trip.id} trip={trip} needed={needed} />
+                    <TripRow key={trip.id} trip={trip} firstPick={firstPick} />
                   ))}
                 </div>
               )}

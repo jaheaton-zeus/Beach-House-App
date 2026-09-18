@@ -51,6 +51,7 @@ export async function notifyReservationDecision(input: {
   checkOut: string;
   guestCount: number;
   status: "approved" | "denied";
+  reason?: string;
 }): Promise<void> {
   const { override } = await getEmailContext();
   const to = resolveRecipients([input.email], override);
